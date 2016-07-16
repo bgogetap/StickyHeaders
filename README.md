@@ -1,3 +1,4 @@
+[ ![Download](https://api.bintray.com/packages/bgogetap/android/StickyHeaders/images/download.svg) ](https://bintray.com/bgogetap/android/StickyHeaders/_latestVersion) [![Build Status](https://travis-ci.org/bgogetap/StickyHeaders.svg?branch=tests)](https://travis-ci.org/bgogetap/StickyHeaders)
 # StickyHeaders
 Easily add Sticky Headers to your RecyclerView
 
@@ -10,7 +11,7 @@ For items in your dataset that you want to act as sticky headers, implement the 
 
 That's it! See the example app for more in depth details.
 
-Add to your Gradle dependencies:
+Add to your Gradle dependencies (Check badge at top for latest version):
 
 ```groovy
 buildscript {
@@ -20,6 +21,6 @@ buildscript {
 }
 
 dependencies {
-    compile 'com.brandongogetap:stickyheaders:0.1.0'
+    compile 'com.brandongogetap:stickyheaders:x.y.z'
 }
 ```
