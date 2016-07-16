@@ -17,4 +17,4 @@ jdk:
   - oraclejdk8
 
 script:
-  - ./gradlew test
+  - ./gradlew test connectedAndroidTest
