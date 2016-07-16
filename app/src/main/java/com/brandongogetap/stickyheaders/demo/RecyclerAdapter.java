@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.brandongogetap.stickyheaders.StickyHeader;
+import com.brandongogetap.stickyheaders.exposed.StickyHeader;
 
 import java.util.List;
 

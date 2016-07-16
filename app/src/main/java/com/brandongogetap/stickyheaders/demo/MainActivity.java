@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.brandongogetap.stickyheaders.StickyHeaderHandler;
+import com.brandongogetap.stickyheaders.exposed.StickyHeaderHandler;
 import com.brandongogetap.stickyheaders.StickyLayoutManager;
 
 import java.util.ArrayList;

@@ -5,6 +5,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.brandongogetap.stickyheaders.ViewRetriever.RecyclerViewRetriever;
+import com.brandongogetap.stickyheaders.exposed.StickyHeader;
+import com.brandongogetap.stickyheaders.exposed.StickyHeaderHandler;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,6 +19,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
     private StickyHeaderPositioner positioner;
     private StickyHeaderHandler headerHandler;
     private List<Integer> headerPositions;
+    private RecyclerViewRetriever viewRetriever;
 
     public StickyLayoutManager(Context context, StickyHeaderHandler headerHandler) {
         this(context, VERTICAL, false, headerHandler);
@@ -32,6 +37,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
         this.headerHandler = headerHandler;
         positioner = new StickyHeaderPositioner(headerHandler);
         headerPositions = new ArrayList<>();
+        viewRetriever = new RecyclerViewRetriever();
     }
 
     @Override
@@ -39,7 +45,8 @@ public class StickyLayoutManager extends LinearLayoutManager {
         super.onLayoutChildren(recycler, state);
         cacheHeaderPositions();
         positioner.reset(getOrientation(), findFirstVisibleItemPosition());
-        positioner.updateHeaderState(findFirstVisibleItemPosition(), recycler);
+        positioner.updateHeaderState(
+                findFirstVisibleItemPosition(), viewRetriever.setRecycler(recycler));
         positioner.checkHeaderPositions(getVisibleHeaders());
     }
 
@@ -57,7 +64,8 @@ public class StickyLayoutManager extends LinearLayoutManager {
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
         int scroll = super.scrollVerticallyBy(dy, recycler, state);
         if (Math.abs(scroll) > 0) {
-            positioner.updateHeaderState(findFirstVisibleItemPosition(), recycler);
+            positioner.updateHeaderState(
+                    findFirstVisibleItemPosition(), viewRetriever.setRecycler(recycler));
             positioner.checkHeaderPositions(getVisibleHeaders());
         }
         return scroll;
@@ -80,7 +88,8 @@ public class StickyLayoutManager extends LinearLayoutManager {
     public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
         int scroll = super.scrollHorizontallyBy(dx, recycler, state);
         if (Math.abs(scroll) > 0) {
-            positioner.updateHeaderState(findFirstVisibleItemPosition(), recycler);
+            positioner.updateHeaderState(
+                    findFirstVisibleItemPosition(), viewRetriever.setRecycler(recycler));
             positioner.checkHeaderPositions(getVisibleHeaders());
         }
         return scroll;

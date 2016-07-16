@@ -1,10 +1,12 @@
 package com.brandongogetap.stickyheaders;
 
 import android.os.Build;
+import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewTreeObserver;
+
+import com.brandongogetap.stickyheaders.exposed.StickyHeaderHandler;
 
 import java.util.List;
 import java.util.Map;
@@ -30,7 +32,7 @@ final class StickyHeaderPositioner {
         this.headerPositions = headerPositions;
     }
 
-    void updateHeaderState(int firstVisiblePosition, RecyclerView.Recycler recycler) {
+    void updateHeaderState(int firstVisiblePosition, ViewRetriever viewRetriever) {
         if (lastFirstVisiblePosition == firstVisiblePosition) {
             // Already checked header state for this effective scroll position
             return;
@@ -41,7 +43,7 @@ final class StickyHeaderPositioner {
                 detachHeader();
                 lastBoundPosition = INVALID_POSITION;
             } else {
-                View view = recycler.getViewForPosition(headerPositionToShow);
+                View view = viewRetriever.getViewForPosition(headerPositionToShow);
                 attachHeader(view);
                 lastBoundPosition = headerPositionToShow;
             }
@@ -49,6 +51,9 @@ final class StickyHeaderPositioner {
         lastFirstVisiblePosition = firstVisiblePosition;
     }
 
+    // This checks visible headers and their positions to determine if the sticky header needs
+    // to be offset. In reality, only the header following the sticky header is checked. Some
+    // optimization may be possible here (not storing all visible headers in map).
     void checkHeaderPositions(final Map<Integer, View> visibleHeaders) {
         if (currentHeader == null) return;
 
@@ -60,25 +65,27 @@ final class StickyHeaderPositioner {
         for (Map.Entry<Integer, View> entry : visibleHeaders.entrySet()) {
             if (entry.getKey() == lastBoundPosition) continue;
             View nextHeader = entry.getValue();
-            if (offsetHeader(nextHeader)) {
-                break;
-            } else {
+            if (offsetHeader(nextHeader) == -1) {
                 resetTranslation();
             }
+            break;
         }
         currentHeader.setVisibility(View.VISIBLE);
     }
 
-    private boolean offsetHeader(View nextHeader) {
+    private float offsetHeader(View nextHeader) {
         boolean shouldOffsetHeader = shouldOffsetHeader(nextHeader);
+        float offset = -1;
         if (shouldOffsetHeader) {
             if (orientation == LinearLayoutManager.VERTICAL) {
-                currentHeader.setTranslationY(-(currentHeader.getHeight() - nextHeader.getY()));
+                offset = -(currentHeader.getHeight() - nextHeader.getY());
+                currentHeader.setTranslationY(offset);
             } else {
-                currentHeader.setTranslationX(-(currentHeader.getWidth() - nextHeader.getX()));
+                offset = -(currentHeader.getWidth() - nextHeader.getX());
+                currentHeader.setTranslationX(offset);
             }
         }
-        return shouldOffsetHeader;
+        return offset;
     }
 
     private boolean shouldOffsetHeader(View nextHeader) {
@@ -136,6 +143,7 @@ final class StickyHeaderPositioner {
         currentHeader.setAccessibilityDelegate(null);
         // Set to Invisible until we position it in #checkHeaderPositions.
         currentHeader.setVisibility(View.INVISIBLE);
+        currentHeader.setId(R.id.header_view);
         stickyHeaderHandler.getRecyclerParent().addView(view);
         dirty = false;
     }
@@ -160,7 +168,7 @@ final class StickyHeaderPositioner {
 
     /**
      * Detaching while {@link StickyLayoutManager} is laying out children can cause an inconsistent
-     * state in the child count variable in {@link android.widget.FrameLayout#layoutChildren}
+     * state in the child count variable in {@link android.widget.FrameLayout} layoutChildren method
      */
     private void safeDetachHeader() {
         stickyHeaderHandler.getRecyclerParent().getViewTreeObserver().addOnGlobalLayoutListener(
@@ -179,5 +187,9 @@ final class StickyHeaderPositioner {
                         }
                     }
                 });
+    }
+
+    @VisibleForTesting int getLastBoundPosition() {
+        return lastBoundPosition;
     }
 }

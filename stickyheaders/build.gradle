@@ -1,4 +1,25 @@
+plugins {
+    id "com.jfrog.bintray" version "1.6"
+}
 apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+apply plugin: 'com.github.dcendents.android-maven'
+
+repositories {
+    mavenCentral()
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+group = PROJECT_GROUP_ID
+version = PROJECT_VERSION
 
 android {
     compileSdkVersion 24
@@ -19,11 +40,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
 }
 
 dependencies {
@@ -35,8 +51,25 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile "org.mockito:mockito-core:$mockitoVersion"
     testCompile 'org.robolectric:robolectric:3.1'
-    testCompile "org.powermock:powermock-module-junit4:1.6.4"
-    testCompile "org.powermock:powermock-module-junit4-rule:1.6.4"
-    testCompile "org.powermock:powermock-api-mockito:1.6.4"
-    testCompile "org.powermock:powermock-classloading-xstream:1.6.4"
+}
+
+bintray {
+    Properties properties = new Properties()
+    if (file('local.properties').exists()) {
+        properties.load(new FileInputStream(file('local.properties')))
+    }
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    configurations = ['archives']
+    pkg {
+        repo = 'android'
+        name = 'StickyHeaders'
+        userOrg = user
+        licenses = ['Apache-2.0']
+        vcsUrl = PROJECT_VCS_URL
+        version {
+            name = PROJECT_VERSION
+            desc = PROJECT_DESCRIPTION
+        }
+    }
 }
