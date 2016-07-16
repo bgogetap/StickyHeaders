@@ -8,10 +8,13 @@ android:
 
     - android-24
 
+    - extra-google-m2repository
+    - extra-android-m2repository
+
     - sys-img-armeabi-v7a-android-23
 
 jdk:
   - oraclejdk7
 
 script:
-  - ./gradlew test connectedAndroidTest
+  - ./gradlew test
