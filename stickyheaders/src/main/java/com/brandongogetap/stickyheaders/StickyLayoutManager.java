@@ -38,7 +38,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
     public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
         super.onLayoutChildren(recycler, state);
         cacheHeaderPositions();
-        positioner.reset(getOrientation());
+        positioner.reset(getOrientation(), findFirstVisibleItemPosition());
         positioner.updateHeaderState(findFirstVisibleItemPosition(), recycler);
         positioner.checkHeaderPositions(getVisibleHeaders());
     }
