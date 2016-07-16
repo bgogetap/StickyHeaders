@@ -122,6 +122,7 @@ final class StickyHeaderPositioner {
                             //noinspection deprecation
                             currentHeader.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                         }
+                        stickyHeaderHandler.getRecyclerParent().requestLayout();
                         checkHeaderPositions(visibleHeaders);
                     }
                 });
