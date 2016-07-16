@@ -11,6 +11,8 @@ For items in your dataset that you want to act as sticky headers, implement the 
 
 That's it! See the example app for more in depth details.
 
+[![StickyHeaders](art/demo.gif)]
+
 Add to your Gradle dependencies (Check badge at top for latest version):
 
 ```groovy
