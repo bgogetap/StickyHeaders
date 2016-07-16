@@ -1,4 +1,4 @@
-package com.brandongogetap.stickyheaders;
+package com.brandongogetap.stickyheaders.exposed;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;

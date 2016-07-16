@@ -4,6 +4,8 @@ import android.support.design.widget.CoordinatorLayout;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.brandongogetap.stickyheaders.exposed.StickyHeaderHandler;
+
 final class Preconditions {
 
     private Preconditions() {

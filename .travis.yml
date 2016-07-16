@@ -1,0 +1,17 @@
+language: android
+android:
+  components:
+    - platform-tools
+    - tools
+
+    - build-tools-24.0.0
+
+    - android-24
+
+    - sys-img-armeabi-v7a-android-23
+
+jdk:
+  - oraclejdk7
+
+script:
+  - ./gradlew test connectedAndroidTest
