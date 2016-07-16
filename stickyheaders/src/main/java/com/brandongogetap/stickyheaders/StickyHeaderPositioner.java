@@ -122,6 +122,7 @@ final class StickyHeaderPositioner {
                             //noinspection deprecation
                             currentHeader.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                         }
+                        stickyHeaderHandler.getRecyclerParent().requestLayout();
                         checkHeaderPositions(visibleHeaders);
                     }
                 });
@@ -146,8 +147,11 @@ final class StickyHeaderPositioner {
         }
     }
 
-    void reset(int orientation) {
+    void reset(int orientation, int firstVisiblePosition) {
         this.orientation = orientation;
+        // Don't reset/detach if we are going to reattach the same header
+        if (getHeaderPositionToShow(firstVisiblePosition) == lastBoundPosition) return;
+
         dirty = true;
         safeDetachHeader();
         lastBoundPosition = INVALID_POSITION;
