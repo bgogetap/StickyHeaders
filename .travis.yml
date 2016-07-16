@@ -14,7 +14,7 @@ android:
     - sys-img-armeabi-v7a-android-23
 
 jdk:
-  - oraclejdk7
+  - oraclejdk8
 
 script:
   - ./gradlew test
