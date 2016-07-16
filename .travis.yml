@@ -8,6 +8,9 @@ android:
 
     - android-24
 
+    - extra-google-m2repository
+    - extra-android-m2repository
+
 jdk:
   - oraclejdk8
 
