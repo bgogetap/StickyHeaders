@@ -3,11 +3,9 @@ package com.brandongogetap.stickyheaders.demo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
-import com.brandongogetap.stickyheaders.exposed.StickyHeaderHandler;
 import com.brandongogetap.stickyheaders.StickyLayoutManager;
+import com.brandongogetap.stickyheaders.exposed.StickyHeaderHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,15 +13,14 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements StickyHeaderHandler {
 
     private List<Item> items;
-    private FrameLayout recyclerParent;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerParent = (FrameLayout) findViewById(R.id.fl_parent);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
         items = compileItems();
         RecyclerAdapter adapter = new RecyclerAdapter(items);
@@ -48,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements StickyHeaderHandl
         return items;
     }
 
-    @Override public ViewGroup getRecyclerParent() {
-        return recyclerParent;
+    @Override public RecyclerView getRecyclerView() {
+        return recyclerView;
     }
 }

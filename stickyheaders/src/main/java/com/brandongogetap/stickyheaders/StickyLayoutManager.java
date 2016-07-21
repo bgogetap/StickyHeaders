@@ -45,9 +45,8 @@ public class StickyLayoutManager extends LinearLayoutManager {
         super.onLayoutChildren(recycler, state);
         cacheHeaderPositions();
         positioner.reset(getOrientation(), findFirstVisibleItemPosition());
-        positioner.updateHeaderState(
-                findFirstVisibleItemPosition(), viewRetriever.setRecycler(recycler));
-        positioner.checkHeaderPositions(getVisibleHeaders());
+        positioner.updateHeaderState(findFirstVisibleItemPosition(), getVisibleHeaders(),
+                viewRetriever.setRecycler(recycler));
     }
 
     private void cacheHeaderPositions() {
@@ -64,9 +63,18 @@ public class StickyLayoutManager extends LinearLayoutManager {
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
         int scroll = super.scrollVerticallyBy(dy, recycler, state);
         if (Math.abs(scroll) > 0) {
-            positioner.updateHeaderState(
-                    findFirstVisibleItemPosition(), viewRetriever.setRecycler(recycler));
-            positioner.checkHeaderPositions(getVisibleHeaders());
+            positioner.updateHeaderState(findFirstVisibleItemPosition(), getVisibleHeaders(),
+                    viewRetriever.setRecycler(recycler));
+        }
+        return scroll;
+    }
+
+    @Override
+    public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
+        int scroll = super.scrollHorizontallyBy(dx, recycler, state);
+        if (Math.abs(scroll) > 0) {
+            positioner.updateHeaderState(findFirstVisibleItemPosition(), getVisibleHeaders(),
+                    viewRetriever.setRecycler(recycler));
         }
         return scroll;
     }
@@ -82,16 +90,5 @@ public class StickyLayoutManager extends LinearLayoutManager {
             }
         }
         return visibleHeaders;
-    }
-
-    @Override
-    public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
-        int scroll = super.scrollHorizontallyBy(dx, recycler, state);
-        if (Math.abs(scroll) > 0) {
-            positioner.updateHeaderState(
-                    findFirstVisibleItemPosition(), viewRetriever.setRecycler(recycler));
-            positioner.checkHeaderPositions(getVisibleHeaders());
-        }
-        return scroll;
     }
 }

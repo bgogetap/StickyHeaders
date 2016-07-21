@@ -20,7 +20,7 @@ final class Preconditions {
     }
 
     static void validateParentView(StickyHeaderHandler headerHandler) {
-        View parentView = headerHandler.getRecyclerParent();
+        View parentView = (View) headerHandler.getRecyclerView().getParent();
         if (!(parentView instanceof FrameLayout) && !(parentView instanceof CoordinatorLayout)) {
             throw new IllegalArgumentException("RecyclerView parent must be either a FrameLayout or CoordinatorLayout");
         }
