@@ -22,13 +22,13 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':stickyheaders')
-    compile 'com.android.support:appcompat-v7:24.0.0'
-    compile 'com.android.support:recyclerview-v7:24.0.0'
+    compile "com.android.support:appcompat-v7:$supportLibraryVersion"
+    compile "com.android.support:recyclerview-v7:$supportLibraryVersion"
 
     testCompile 'junit:junit:4.12'
 
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-    androidTestCompile 'com.android.support:support-annotations:24.0.0'
+    androidTestCompile "com.android.support:support-annotations:$supportLibraryVersion"
     androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.2.2', {
         exclude module: 'support-annotations'
         exclude module: 'support-v4'

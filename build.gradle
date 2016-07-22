@@ -25,4 +25,5 @@ task clean(type: Delete) {
 
 ext {
     mockitoVersion = '1.10.19'
+    supportLibraryVersion = '24.1.1'
 }
