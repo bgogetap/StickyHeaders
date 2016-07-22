@@ -80,9 +80,9 @@ final class StickyHeaderPositioner {
             if (offsetHeader(nextHeader) == -1) {
                 resetTranslation();
             }
-            currentHeader.setVisibility(View.VISIBLE);
             break;
         }
+        currentHeader.setVisibility(View.VISIBLE);
     }
 
     private float offsetHeader(View nextHeader) {
@@ -129,7 +129,7 @@ final class StickyHeaderPositioner {
      */
     private int getHeaderPositionToShow(int firstVisiblePosition, @Nullable View headerForPosition) {
         int headerPositionToShow = INVALID_POSITION;
-        if (headerForPosition != null && headerForPosition.getY() > 0) {
+        if (headerIsOffset(headerForPosition)) {
             int offsetHeaderIndex = headerPositions.indexOf(firstVisiblePosition);
             if (offsetHeaderIndex > 0) {
                 return headerPositions.get(offsetHeaderIndex - 1);
@@ -143,6 +143,14 @@ final class StickyHeaderPositioner {
             }
         }
         return headerPositionToShow;
+    }
+
+    private boolean headerIsOffset(View headerForPosition) {
+        if (headerForPosition != null) {
+            return orientation == LinearLayoutManager.VERTICAL ?
+                    headerForPosition.getY() > 0 : headerForPosition.getX() > 0;
+        }
+        return false;
     }
 
     private void attachHeader(View view) {
