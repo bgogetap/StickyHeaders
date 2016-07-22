@@ -13,14 +13,13 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements StickyHeaderHandler {
 
     private List<Item> items;
-    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
         items = compileItems();
         RecyclerAdapter adapter = new RecyclerAdapter(items);
@@ -43,9 +42,5 @@ public class MainActivity extends AppCompatActivity implements StickyHeaderHandl
 
     @Override public List<?> getAdapterData() {
         return items;
-    }
-
-    @Override public RecyclerView getRecyclerView() {
-        return recyclerView;
     }
 }

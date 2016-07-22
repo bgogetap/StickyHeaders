@@ -5,12 +5,11 @@ import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewTreeObserver;
-
-import com.brandongogetap.stickyheaders.exposed.StickyHeaderHandler;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,7 @@ final class StickyHeaderPositioner {
 
     private static final int INVALID_POSITION = -1;
 
-    private final StickyHeaderHandler stickyHeaderHandler;
+    private final RecyclerView recyclerView;
 
     private View currentHeader;
     private int lastBoundPosition = INVALID_POSITION;
@@ -28,8 +27,8 @@ final class StickyHeaderPositioner {
     private boolean dirty;
     private final boolean checkMargins;
 
-    StickyHeaderPositioner(StickyHeaderHandler stickyHeaderHandler) {
-        this.stickyHeaderHandler = stickyHeaderHandler;
+    StickyHeaderPositioner(RecyclerView recyclerView) {
+        this.recyclerView = recyclerView;
         checkMargins = recyclerViewHasPadding();
     }
 
@@ -184,11 +183,11 @@ final class StickyHeaderPositioner {
 
     private void matchMarginsToPadding(MarginLayoutParams layoutParams) {
         @Px int leftMargin = orientation == LinearLayoutManager.VERTICAL ?
-                stickyHeaderHandler.getRecyclerView().getPaddingLeft() : 0;
+                recyclerView.getPaddingLeft() : 0;
         @Px int topMargin = orientation == LinearLayoutManager.VERTICAL ?
-                0 : stickyHeaderHandler.getRecyclerView().getPaddingTop();
+                0 : recyclerView.getPaddingTop();
         @Px int rightMargin = orientation == LinearLayoutManager.VERTICAL ?
-                stickyHeaderHandler.getRecyclerView().getPaddingRight() : 0;
+                recyclerView.getPaddingRight() : 0;
         layoutParams.setMargins(leftMargin, topMargin, rightMargin, 0);
     }
 
@@ -211,12 +210,13 @@ final class StickyHeaderPositioner {
     }
 
     private boolean recyclerViewHasPadding() {
-        View view = stickyHeaderHandler.getRecyclerView();
-        return view.getPaddingLeft() > 0 || view.getPaddingRight() > 0 || view.getPaddingTop() > 0;
+        return recyclerView.getPaddingLeft() > 0
+                || recyclerView.getPaddingRight() > 0
+                || recyclerView.getPaddingTop() > 0;
     }
 
     private ViewGroup getRecyclerParent() {
-        return (ViewGroup) stickyHeaderHandler.getRecyclerView().getParent();
+        return (ViewGroup) recyclerView.getParent();
     }
 
     private void waitForLayoutAndRetry(final Map<Integer, View> visibleHeaders) {

@@ -1,13 +1,13 @@
 package com.brandongogetap.stickyheaders;
 
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.FrameLayout;
-
-import com.brandongogetap.stickyheaders.exposed.StickyHeaderHandler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +25,11 @@ final class StickyHeaderPositionerRobot {
     private View currentHeader;
 
     private StickyHeaderPositionerRobot() {
-        StickyHeaderHandler headerHandler = mock(StickyHeaderHandler.class);
-        when(headerHandler.getRecyclerParent()).thenReturn(mock(FrameLayout.class));
-        when(headerHandler.getRecyclerParent().getViewTreeObserver()).thenReturn(mock(ViewTreeObserver.class));
-        positioner = new StickyHeaderPositioner(headerHandler);
+        RecyclerView recyclerView = mock(RecyclerView.class);
+        ViewGroup parent = mock(ViewGroup.class);
+        when(recyclerView.getParent()).thenReturn(parent);
+        when(parent.getViewTreeObserver()).thenReturn(mock(ViewTreeObserver.class));
+        positioner = new StickyHeaderPositioner(recyclerView);
         positioner.setHeaderPositions(new ArrayList<Integer>());
         positioner.reset(LinearLayoutManager.VERTICAL, 0);
     }
@@ -47,7 +48,7 @@ final class StickyHeaderPositionerRobot {
         currentHeader = mock(View.class);
         when(currentHeader.getHeight()).thenReturn(200);
         when(viewRetriever.getViewForPosition(anyInt())).thenReturn(currentHeader);
-        positioner.updateHeaderState(firstVisiblePosition, viewRetriever);
+        positioner.updateHeaderState(firstVisiblePosition, Collections.<Integer, View>emptyMap(), viewRetriever);
         return this;
     }
 
