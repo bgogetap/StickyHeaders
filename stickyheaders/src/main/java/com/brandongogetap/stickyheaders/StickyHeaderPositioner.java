@@ -4,6 +4,7 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -19,13 +20,15 @@ final class StickyHeaderPositioner {
     private static final int INVALID_POSITION = -1;
 
     private final RecyclerView recyclerView;
+    private final boolean checkMargins;
 
     private View currentHeader;
     private int lastBoundPosition = INVALID_POSITION;
     private List<Integer> headerPositions;
     private int orientation;
     private boolean dirty;
-    private final boolean checkMargins;
+    private boolean elevateHeaders;
+    private float cachedElevation = Float.MIN_VALUE;
 
     StickyHeaderPositioner(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
@@ -162,11 +165,22 @@ final class StickyHeaderPositioner {
         // Set to Invisible until we position it in #checkHeaderPositions.
         currentHeader.setVisibility(View.INVISIBLE);
         currentHeader.setId(R.id.header_view);
+        checkElevation(currentHeader);
         getRecyclerParent().addView(currentHeader);
         if (checkMargins) {
             updateLayoutParams(currentHeader);
         }
         dirty = false;
+    }
+
+    private void checkElevation(View currentHeader) {
+        if (elevateHeaders) {
+            if (cachedElevation == Float.MIN_VALUE) {
+                cachedElevation = currentHeader.getContext().getResources()
+                        .getDimension(R.dimen.default_elevation);
+            }
+            ViewCompat.setElevation(currentHeader, cachedElevation);
+        }
     }
 
     private void detachHeader() {
@@ -271,5 +285,9 @@ final class StickyHeaderPositioner {
 
     @VisibleForTesting int getLastBoundPosition() {
         return lastBoundPosition;
+    }
+
+    void setElevateHeaders(boolean elevateHeaders) {
+        this.elevateHeaders = elevateHeaders;
     }
 }

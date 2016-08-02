@@ -21,15 +21,27 @@ public class StickyLayoutManager extends LinearLayoutManager {
     private List<Integer> headerPositions;
     private RecyclerViewRetriever viewRetriever;
     private RecyclerView recyclerView;
+    private boolean elevateHeaders;
 
     public StickyLayoutManager(Context context, StickyHeaderHandler headerHandler) {
         this(context, VERTICAL, false, headerHandler);
-        setStickyHeaderHandler(headerHandler);
+        init(headerHandler);
     }
 
     public StickyLayoutManager(Context context, int orientation, boolean reverseLayout, StickyHeaderHandler headerHandler) {
         super(context, orientation, reverseLayout);
-        setStickyHeaderHandler(headerHandler);
+        init(headerHandler);
+    }
+
+    private void init(StickyHeaderHandler stickyHeaderHandler) {
+        setStickyHeaderHandler(stickyHeaderHandler);
+    }
+
+    public void elevateHeaders(boolean elevateHeaders) {
+        this.elevateHeaders = elevateHeaders;
+        if (positioner != null) {
+            positioner.setElevateHeaders(elevateHeaders);
+        }
     }
 
     private void setStickyHeaderHandler(StickyHeaderHandler headerHandler) {
@@ -96,5 +108,6 @@ public class StickyLayoutManager extends LinearLayoutManager {
         recyclerView = view;
         Preconditions.validateParentView(recyclerView);
         positioner = new StickyHeaderPositioner(recyclerView);
+        positioner.setElevateHeaders(elevateHeaders);
     }
 }
