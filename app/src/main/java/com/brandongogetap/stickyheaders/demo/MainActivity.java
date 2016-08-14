@@ -24,7 +24,9 @@ public class MainActivity extends AppCompatActivity implements StickyHeaderHandl
         items = compileItems();
         RecyclerAdapter adapter = new RecyclerAdapter(items);
         StickyLayoutManager layoutManager = new StickyLayoutManager(this, this);
-        layoutManager.elevateHeaders(true);
+        layoutManager.elevateHeaders(true); // Default elevation of 5dp
+        // You can also specify a specific dp for elevation
+//        layoutManager.elevateHeaders(10);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
     }

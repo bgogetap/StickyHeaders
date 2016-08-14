@@ -1,10 +1,10 @@
 package com.brandongogetap.stickyheaders;
 
+import android.content.Context;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -19,6 +19,9 @@ final class StickyHeaderPositioner {
 
     private static final int INVALID_POSITION = -1;
 
+    static final int NO_ELEVATION = -1;
+    static final int DEFAULT_ELEVATION = 5;
+
     private final RecyclerView recyclerView;
     private final boolean checkMargins;
 
@@ -27,8 +30,8 @@ final class StickyHeaderPositioner {
     private List<Integer> headerPositions;
     private int orientation;
     private boolean dirty;
-    private boolean elevateHeaders;
-    private float cachedElevation = Float.MIN_VALUE;
+    private float headerElevation = NO_ELEVATION;
+    private int cachedElevation = NO_ELEVATION;
 
     StickyHeaderPositioner(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
@@ -64,6 +67,7 @@ final class StickyHeaderPositioner {
             }
         }
         checkHeaderPositions(visibleHeaders);
+        checkElevation();
     }
 
     // This checks visible headers and their positions to determine if the sticky header needs
@@ -71,7 +75,6 @@ final class StickyHeaderPositioner {
     // optimization may be possible here (not storing all visible headers in map).
     void checkHeaderPositions(final Map<Integer, View> visibleHeaders) {
         if (currentHeader == null) return;
-
         // This can happen after configuration changes.
         if (currentHeader.getHeight() == 0) {
             waitForLayoutAndRetry(visibleHeaders);
@@ -159,13 +162,13 @@ final class StickyHeaderPositioner {
     private void attachHeader(View view) {
         detachHeader();
         this.currentHeader = view;
+        resolveElevationSettings(currentHeader.getContext());
         // Prevents accessibility events being propagated to the RecyclerView which is no longer the
         // parent of this view.
         currentHeader.setAccessibilityDelegate(null);
         // Set to Invisible until we position it in #checkHeaderPositions.
         currentHeader.setVisibility(View.INVISIBLE);
         currentHeader.setId(R.id.header_view);
-        checkElevation(currentHeader);
         getRecyclerParent().addView(currentHeader);
         if (checkMargins) {
             updateLayoutParams(currentHeader);
@@ -173,13 +176,34 @@ final class StickyHeaderPositioner {
         dirty = false;
     }
 
-    private void checkElevation(View currentHeader) {
-        if (elevateHeaders) {
-            if (cachedElevation == Float.MIN_VALUE) {
-                cachedElevation = currentHeader.getContext().getResources()
-                        .getDimension(R.dimen.default_elevation);
+    private void checkElevation() {
+        if (headerElevation != NO_ELEVATION && currentHeader != null) {
+            if (orientation == LinearLayoutManager.VERTICAL && currentHeader.getTranslationY() == 0
+                    || orientation == LinearLayoutManager.HORIZONTAL && currentHeader.getTranslationX() == 0) {
+                elevateHeader();
+            } else {
+                settleHeader();
             }
-            ViewCompat.setElevation(currentHeader, cachedElevation);
+        }
+    }
+
+    private void elevateHeader() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (currentHeader.getTag() != null) {
+                // Already elevated, bail out
+                return;
+            }
+            currentHeader.setTag(true);
+            currentHeader.animate().z(headerElevation);
+        }
+    }
+
+    private void settleHeader() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (currentHeader.getTag() != null) {
+                currentHeader.setTag(null);
+                currentHeader.animate().z(0);
+            }
         }
     }
 
@@ -287,7 +311,25 @@ final class StickyHeaderPositioner {
         return lastBoundPosition;
     }
 
-    void setElevateHeaders(boolean elevateHeaders) {
-        this.elevateHeaders = elevateHeaders;
+    void setElevateHeaders(int dpElevation) {
+        if (dpElevation != NO_ELEVATION) {
+            // Context may not be available at this point, so caching the dp value to be converted
+            // into pixels after first header is attached.
+            cachedElevation = dpElevation;
+        } else {
+            headerElevation = NO_ELEVATION;
+            cachedElevation = NO_ELEVATION;
+        }
+    }
+
+    private void resolveElevationSettings(Context context) {
+        if (cachedElevation != NO_ELEVATION && headerElevation == NO_ELEVATION) {
+            headerElevation = pxFromDp(context, cachedElevation);
+        }
+    }
+
+    private float pxFromDp(Context context, int dp) {
+        float scale = context.getResources().getDisplayMetrics().density;
+        return dp * scale;
     }
 }

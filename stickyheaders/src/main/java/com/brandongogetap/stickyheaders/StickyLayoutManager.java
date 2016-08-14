@@ -21,7 +21,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
     private List<Integer> headerPositions;
     private RecyclerViewRetriever viewRetriever;
     private RecyclerView recyclerView;
-    private boolean elevateHeaders;
+    private int headerElevation;
 
     public StickyLayoutManager(Context context, StickyHeaderHandler headerHandler) {
         this(context, VERTICAL, false, headerHandler);
@@ -37,10 +37,29 @@ public class StickyLayoutManager extends LinearLayoutManager {
         setStickyHeaderHandler(stickyHeaderHandler);
     }
 
+    /**
+     * Enable or disable elevation for Sticky Headers.
+     * <p>
+     * If you want to specify a specific amount of elevation, use
+     * {@link StickyLayoutManager#elevateHeaders(int)}
+     *
+     * @param elevateHeaders Enable Sticky Header elevation. Default is false.
+     */
     public void elevateHeaders(boolean elevateHeaders) {
-        this.elevateHeaders = elevateHeaders;
+        this.headerElevation = elevateHeaders ?
+                StickyHeaderPositioner.DEFAULT_ELEVATION : StickyHeaderPositioner.NO_ELEVATION;
+        elevateHeaders(headerElevation);
+    }
+
+    /**
+     * Enable Sticky Header elevation with a specific amount.
+     *
+     * @param dp elevation in dp
+     */
+    public void elevateHeaders(int dp) {
+        this.headerElevation = dp;
         if (positioner != null) {
-            positioner.setElevateHeaders(elevateHeaders);
+            positioner.setElevateHeaders(dp);
         }
     }
 
@@ -108,6 +127,6 @@ public class StickyLayoutManager extends LinearLayoutManager {
         recyclerView = view;
         Preconditions.validateParentView(recyclerView);
         positioner = new StickyHeaderPositioner(recyclerView);
-        positioner.setElevateHeaders(elevateHeaders);
+        positioner.setElevateHeaders(headerElevation);
     }
 }
