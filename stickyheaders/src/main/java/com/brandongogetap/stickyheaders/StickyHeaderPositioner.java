@@ -32,6 +32,7 @@ final class StickyHeaderPositioner {
     private boolean dirty;
     private float headerElevation = NO_ELEVATION;
     private int cachedElevation = NO_ELEVATION;
+    private boolean updateCurrentHeader;
 
     StickyHeaderPositioner(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
@@ -45,7 +46,7 @@ final class StickyHeaderPositioner {
     void updateHeaderState(int firstVisiblePosition, Map<Integer, View> visibleHeaders, ViewRetriever viewRetriever) {
         int headerPositionToShow = getHeaderPositionToShow(firstVisiblePosition, visibleHeaders.get(firstVisiblePosition));
         View headerToCopy = visibleHeaders.get(headerPositionToShow);
-        if (headerPositionToShow != lastBoundPosition) {
+        if (headerPositionToShow != lastBoundPosition || updateCurrentHeader) {
             if (headerPositionToShow == INVALID_POSITION) {
                 detachHeader();
                 lastBoundPosition = INVALID_POSITION;
@@ -53,7 +54,7 @@ final class StickyHeaderPositioner {
                 // We don't want to attach yet if header view is not at edge
                 if (checkMargins && headerAwayFromEdge(headerToCopy)) return;
                 View view = viewRetriever.getViewForPosition(headerPositionToShow);
-                attachHeader(view);
+                attachHeader(view, updateCurrentHeader);
                 lastBoundPosition = headerPositionToShow;
             }
         } else if (checkMargins) {
@@ -67,7 +68,11 @@ final class StickyHeaderPositioner {
             }
         }
         checkHeaderPositions(visibleHeaders);
-        checkElevation();
+        recyclerView.post(new Runnable() {
+            @Override public void run() {
+                checkElevation();
+            }
+        });
     }
 
     // This checks visible headers and their positions to determine if the sticky header needs
@@ -159,8 +164,11 @@ final class StickyHeaderPositioner {
         return false;
     }
 
-    private void attachHeader(View view) {
-        detachHeader();
+    private void attachHeader(View view, boolean updateExisting) {
+        if (!updateExisting) {
+            detachHeader();
+        }
+        View originalHeaderView = currentHeader;
         this.currentHeader = view;
         resolveElevationSettings(currentHeader.getContext());
         // Prevents accessibility events being propagated to the RecyclerView which is no longer the
@@ -170,10 +178,24 @@ final class StickyHeaderPositioner {
         currentHeader.setVisibility(View.INVISIBLE);
         currentHeader.setId(R.id.header_view);
         getRecyclerParent().addView(currentHeader);
+        if (updateExisting) {
+            removeReplacedHeader(originalHeaderView);
+        }
         if (checkMargins) {
             updateLayoutParams(currentHeader);
         }
         dirty = false;
+    }
+
+    private void removeReplacedHeader(final View originalHeaderView) {
+        getRecyclerParent().post(new Runnable() {
+            @Override public void run() {
+                if (originalHeaderView != null) {
+                    getRecyclerParent().removeView(originalHeaderView);
+                }
+            }
+        });
+        updateCurrentHeader = false;
     }
 
     private void checkElevation() {
@@ -247,8 +269,15 @@ final class StickyHeaderPositioner {
 
     void reset(int orientation, int firstVisiblePosition) {
         this.orientation = orientation;
-        // Don't reset/detach if we are going to reattach the same header
-        if (getHeaderPositionToShow(firstVisiblePosition, null) == lastBoundPosition) return;
+        // Don't reset/detach if same header position is to be attached
+        if (getHeaderPositionToShow(firstVisiblePosition, null) == lastBoundPosition) {
+            if (lastBoundPosition != INVALID_POSITION) {
+                // In case the underlying model has changed for the header, this will update the
+                // currently attached header and avoid "flickering" during the swap.
+                updateCurrentHeader = true;
+            }
+            return;
+        }
 
         dirty = true;
         safeDetachHeader();
