@@ -1,9 +1,9 @@
 plugins {
     id "com.jfrog.bintray" version "1.6"
+    id "com.github.dcendents.android-maven" version "1.5"
 }
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
-apply plugin: 'com.github.dcendents.android-maven'
 
 repositories {
     mavenCentral()
@@ -23,7 +23,7 @@ version = PROJECT_VERSION
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    buildToolsVersion "24.0.1"
 
     defaultConfig {
         minSdkVersion 15
