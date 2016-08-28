@@ -67,7 +67,6 @@ public class StickyLayoutManager extends LinearLayoutManager {
         Preconditions.checkNotNull(headerHandler, "StickyHeaderHandler == null");
         this.headerHandler = headerHandler;
         headerPositions = new ArrayList<>();
-        viewRetriever = new RecyclerViewRetriever();
     }
 
     @Override
@@ -75,8 +74,8 @@ public class StickyLayoutManager extends LinearLayoutManager {
         super.onLayoutChildren(recycler, state);
         cacheHeaderPositions();
         positioner.reset(getOrientation(), findFirstVisibleItemPosition());
-        positioner.updateHeaderState(findFirstVisibleItemPosition(), getVisibleHeaders(),
-                viewRetriever.setRecycler(recycler));
+        positioner.updateHeaderState(
+                findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever);
     }
 
     private void cacheHeaderPositions() {
@@ -93,8 +92,8 @@ public class StickyLayoutManager extends LinearLayoutManager {
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
         int scroll = super.scrollVerticallyBy(dy, recycler, state);
         if (Math.abs(scroll) > 0) {
-            positioner.updateHeaderState(findFirstVisibleItemPosition(), getVisibleHeaders(),
-                    viewRetriever.setRecycler(recycler));
+            positioner.updateHeaderState(
+                    findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever);
         }
         return scroll;
     }
@@ -103,8 +102,8 @@ public class StickyLayoutManager extends LinearLayoutManager {
     public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
         int scroll = super.scrollHorizontallyBy(dx, recycler, state);
         if (Math.abs(scroll) > 0) {
-            positioner.updateHeaderState(findFirstVisibleItemPosition(), getVisibleHeaders(),
-                    viewRetriever.setRecycler(recycler));
+            positioner.updateHeaderState(
+                    findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever);
         }
         return scroll;
     }
@@ -126,6 +125,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
         super.onAttachedToWindow(view);
         recyclerView = view;
         Preconditions.validateParentView(recyclerView);
+        viewRetriever = new RecyclerViewRetriever(recyclerView);
         positioner = new StickyHeaderPositioner(recyclerView);
         positioner.setElevateHeaders(headerElevation);
     }
