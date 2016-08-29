@@ -12,7 +12,7 @@ import java.util.List;
 
 import static android.view.LayoutInflater.from;
 
-final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> {
+final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.BaseViewHolder> {
 
     private final List<Item> data;
 
@@ -21,23 +21,27 @@ final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewH
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = from(parent.getContext()).inflate(R.layout.item_view, parent, false);
-        final MyViewHolder holder = new MyViewHolder(view);
+        final BaseViewHolder viewHolder;
+        if (viewType == 0) {
+            viewHolder = new MyViewHolder(view);
+        } else {
+            viewHolder = new MyOtherViewHolder(view);
+        }
         view.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 // This is unsafe to do in OnClickListeners attached to sticky headers. The adapter
                 // position of the holder will be out of sync if any items have been added/removed.
-                int position = holder.getAdapterPosition();
-
+                int position = viewHolder.getAdapterPosition();
                 data.remove(position);
                 notifyDataSetChanged();
             }
         });
-        return holder;
+        return viewHolder;
     }
 
-    @Override public void onBindViewHolder(MyViewHolder holder, int position) {
+    @Override public void onBindViewHolder(BaseViewHolder holder, int position) {
         Item item = data.get(position);
         holder.titleTextView.setText(item.title);
         holder.messageTextView.setText(item.message);
@@ -57,12 +61,33 @@ final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewH
         return data.size();
     }
 
-    static final class MyViewHolder extends RecyclerView.ViewHolder {
+    @Override public int getItemViewType(int position) {
+        if (position != 0 && position % 16 == 0) {
+            return 1;
+        }
+        return 0;
+    }
+
+    private static final class MyViewHolder extends BaseViewHolder {
+
+        MyViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    private static final class MyOtherViewHolder extends BaseViewHolder {
+
+        MyOtherViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    static class BaseViewHolder extends RecyclerView.ViewHolder {
 
         TextView titleTextView;
         TextView messageTextView;
 
-        MyViewHolder(View itemView) {
+        BaseViewHolder(View itemView) {
             super(itemView);
             titleTextView = (TextView) itemView.findViewById(R.id.tv_title);
             messageTextView = (TextView) itemView.findViewById(R.id.tv_message);

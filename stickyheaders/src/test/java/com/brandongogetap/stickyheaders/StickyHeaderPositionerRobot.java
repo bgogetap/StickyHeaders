@@ -22,16 +22,26 @@ import static org.mockito.Mockito.when;
 final class StickyHeaderPositionerRobot {
 
     private final StickyHeaderPositioner positioner;
+
+    private RecyclerView.ViewHolder viewHolder;
     private View currentHeader;
 
     private StickyHeaderPositionerRobot() {
         RecyclerView recyclerView = mock(RecyclerView.class);
         ViewGroup parent = mock(ViewGroup.class);
         when(recyclerView.getParent()).thenReturn(parent);
+        when(recyclerView.getAdapter()).thenReturn(mock(RecyclerView.Adapter.class));
         when(parent.getViewTreeObserver()).thenReturn(mock(ViewTreeObserver.class));
         positioner = new StickyHeaderPositioner(recyclerView);
         positioner.setHeaderPositions(new ArrayList<Integer>());
         positioner.reset(LinearLayoutManager.VERTICAL, 0);
+
+        currentHeader = mock(View.class);
+        viewHolder = new RecyclerView.ViewHolder(currentHeader) {
+            @Override public String toString() {
+                return super.toString();
+            }
+        };
     }
 
     static StickyHeaderPositionerRobot create() {
@@ -45,9 +55,8 @@ final class StickyHeaderPositionerRobot {
 
     StickyHeaderPositionerRobot setupPosition(int firstVisiblePosition) {
         ViewRetriever viewRetriever = mock(ViewRetriever.class);
-        currentHeader = mock(View.class);
         when(currentHeader.getHeight()).thenReturn(200);
-        when(viewRetriever.getViewForPosition(anyInt())).thenReturn(currentHeader);
+        when(viewRetriever.getViewHolderForPosition(anyInt())).thenReturn(viewHolder);
         positioner.updateHeaderState(firstVisiblePosition, Collections.<Integer, View>emptyMap(), viewRetriever);
         return this;
     }

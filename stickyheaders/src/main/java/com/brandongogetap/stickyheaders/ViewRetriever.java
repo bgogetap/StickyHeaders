@@ -1,28 +1,32 @@
 package com.brandongogetap.stickyheaders;
 
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
+import android.view.ViewGroup;
 
 interface ViewRetriever {
 
-    View getViewForPosition(int position);
+    RecyclerView.ViewHolder getViewHolderForPosition(int headerPositionToShow);
 
     final class RecyclerViewRetriever implements ViewRetriever {
 
-        private RecyclerView.Recycler recycler;
+        private final RecyclerView recyclerView;
 
-        RecyclerViewRetriever() {
+        private RecyclerView.ViewHolder currentViewHolder;
+        private int currentViewType;
+
+        RecyclerViewRetriever(RecyclerView recyclerView) {
+            this.recyclerView = recyclerView;
+            this.currentViewType = -1;
         }
 
-        RecyclerViewRetriever setRecycler(RecyclerView.Recycler recycler) {
-            this.recycler = recycler;
-            return this;
-        }
-
-        @Override public View getViewForPosition(int position) {
-            View view = recycler.getViewForPosition(position);
-            recycler = null;
-            return view;
+        @Override
+        public RecyclerView.ViewHolder getViewHolderForPosition(int position) {
+            if (currentViewType != recyclerView.getAdapter().getItemViewType(position)) {
+                currentViewType = recyclerView.getAdapter().getItemViewType(position);
+                currentViewHolder = recyclerView.getAdapter().createViewHolder(
+                        (ViewGroup) recyclerView.getParent(), currentViewType);
+            }
+            return currentViewHolder;
         }
     }
 }
