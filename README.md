@@ -14,6 +14,11 @@ For items in your dataset that you want to act as sticky headers, implement the 
 
 That's it! See the example app for more in depth details.
 
+####Additional Features
+Add elevation to your headers (animated in and out) on Lollipop and above:
+
+`layoutManager.elevateHeaders(true)` OR `layoutManager.setElevation(int dp)`
+
 ![StickyHeaders](art/demo-padding.gif)
 
 Add to your Gradle dependencies (Check badge at top for latest version):
