@@ -7,12 +7,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.brandongogetap.stickyheaders.exposed.StickyHeader;
+import com.brandongogetap.stickyheaders.exposed.StickyHeaderHandler;
 
 import java.util.List;
 
 import static android.view.LayoutInflater.from;
 
-final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.BaseViewHolder> {
+final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.BaseViewHolder>
+        implements StickyHeaderHandler {
 
     private final List<Item> data;
 
@@ -66,6 +68,10 @@ final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.BaseVie
             return 1;
         }
         return 0;
+    }
+
+    @Override public List<?> getAdapterData() {
+        return data;
     }
 
     private static final class MyViewHolder extends BaseViewHolder {
