@@ -95,14 +95,17 @@ final class StickyHeaderPositioner {
             waitForLayoutAndRetry(visibleHeaders);
             return;
         }
+        boolean reset = false;
         for (Map.Entry<Integer, View> entry : visibleHeaders.entrySet()) {
-            if (entry.getKey() == lastBoundPosition) continue;
-            View nextHeader = entry.getValue();
-            if (offsetHeader(nextHeader) == -1) {
-                resetTranslation();
+            if (entry.getKey() == lastBoundPosition) {
+                reset = true;
+                continue;
             }
+            View nextHeader = entry.getValue();
+            reset = offsetHeader(nextHeader) == -1;
             break;
         }
+        if (reset) resetTranslation();
         currentHeader.setVisibility(View.VISIBLE);
     }
 
