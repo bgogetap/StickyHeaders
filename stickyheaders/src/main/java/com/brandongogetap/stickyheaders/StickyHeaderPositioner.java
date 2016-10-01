@@ -57,7 +57,8 @@ final class StickyHeaderPositioner {
         View headerToCopy = visibleHeaders.get(headerPositionToShow);
         if (headerPositionToShow != lastBoundPosition || updateCurrentHeader) {
             if (headerPositionToShow == INVALID_POSITION) {
-                detachHeader();
+                dirty = true;
+                safeDetachHeader();
                 lastBoundPosition = INVALID_POSITION;
             } else {
                 // We don't want to attach yet if header view is not at edge
@@ -275,9 +276,6 @@ final class StickyHeaderPositioner {
         if (getHeaderPositionToShow(firstVisiblePosition, null) == lastBoundPosition) {
             return;
         }
-
-        dirty = true;
-        safeDetachHeader();
         lastBoundPosition = INVALID_POSITION;
     }
 
@@ -315,22 +313,13 @@ final class StickyHeaderPositioner {
      * state in the child count variable in {@link android.widget.FrameLayout} layoutChildren method
      */
     private void safeDetachHeader() {
-        getRecyclerParent().getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override public void onGlobalLayout() {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                            getRecyclerParent().getViewTreeObserver()
-                                    .removeOnGlobalLayoutListener(this);
-                        } else {
-                            //noinspection deprecation
-                            getRecyclerParent().getViewTreeObserver()
-                                    .removeGlobalOnLayoutListener(this);
-                        }
-                        if (dirty) {
-                            detachHeader();
-                        }
-                    }
-                });
+        getRecyclerParent().post(new Runnable() {
+            @Override public void run() {
+                if (dirty) {
+                    detachHeader();
+                }
+            }
+        });
     }
 
     @VisibleForTesting int getLastBoundPosition() {

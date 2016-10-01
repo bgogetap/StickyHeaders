@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+Version 0.3.4 *(2016-10-01)*
+----------------------------
+- Fixes a crash when current sticky header is removed from the adapter data set and `notifyDataSetChanged` is called
+
 Version 0.2.0 *(2016-7-21)*
 ---------------------------
 - StickyHeaderHandler now only needs to provide the dataset supplied to the RecyclerView.Adapter
