@@ -129,4 +129,9 @@ public class StickyLayoutManager extends LinearLayoutManager {
         positioner = new StickyHeaderPositioner(recyclerView);
         positioner.setElevateHeaders(headerElevation);
     }
+
+    public void useUserElevations() {
+        this.headerElevation = StickyHeaderPositioner.USER_ELEVATION;
+        elevateHeaders(headerElevation);
+    }
 }
