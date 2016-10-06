@@ -21,7 +21,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
     private List<Integer> headerPositions;
     private RecyclerViewRetriever viewRetriever;
     private RecyclerView recyclerView;
-    private int headerElevation;
+    private int headerElevation = StickyHeaderPositioner.NO_ELEVATION;
 
     public StickyLayoutManager(Context context, StickyHeaderHandler headerHandler) {
         this(context, VERTICAL, false, headerHandler);
