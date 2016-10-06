@@ -19,6 +19,7 @@ final class StickyHeaderPositioner {
 
     private static final int INVALID_POSITION = -1;
 
+    static final int USER_ELEVATION = -2;
     static final int NO_ELEVATION = -1;
     static final int DEFAULT_ELEVATION = 5;
 
@@ -79,11 +80,12 @@ final class StickyHeaderPositioner {
             }
         }
         checkHeaderPositions(visibleHeaders);
-        recyclerView.post(new Runnable() {
-            @Override public void run() {
-                checkElevation();
-            }
-        });
+        if (headerElevation != USER_ELEVATION)
+            recyclerView.post(new Runnable() {
+                @Override public void run() {
+                    checkElevation();
+                }
+            });
     }
 
     // This checks visible headers and their positions to determine if the sticky header needs
@@ -327,7 +329,10 @@ final class StickyHeaderPositioner {
     }
 
     void setElevateHeaders(int dpElevation) {
-        if (dpElevation != NO_ELEVATION) {
+        if (dpElevation == USER_ELEVATION) {
+            headerElevation = USER_ELEVATION;
+            cachedElevation = USER_ELEVATION;
+        } else  if (dpElevation != NO_ELEVATION) {
             // Context may not be available at this point, so caching the dp value to be converted
             // into pixels after first header is attached.
             cachedElevation = dpElevation;
