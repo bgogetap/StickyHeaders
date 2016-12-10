@@ -19,6 +19,14 @@ Add elevation to your headers (animated in and out) on Lollipop and above:
 
 `layoutManager.elevateHeaders(true)` OR `layoutManager.setElevation(int dp)`
 
+Add a listener to be notified when headers are attached/re-bound or detached:
+
+`StickyLayoutManager#setStickyHeaderListener`
+
+You will be passed the instance of the view that was either attached/re-bound or detached, as well as the adapter position of the data that view represents. It is important to note that the adapter position passed to `headerDetached` may not be the current position in the data set that the view was originally bound with. This can happen if the data has changed since that header was made sticky.
+
+The adapter position passed in `headerAttached` will always be correct at that moment.
+
 ![StickyHeaders](art/demo-padding.gif)
 
 Add to your Gradle dependencies (Check badge at top for latest version):

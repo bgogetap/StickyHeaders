@@ -3,8 +3,11 @@ package com.brandongogetap.stickyheaders.demo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
 
 import com.brandongogetap.stickyheaders.StickyLayoutManager;
+import com.brandongogetap.stickyheaders.exposed.StickyHeaderListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,17 @@ public class MainActivity extends AppCompatActivity {
 //        layoutManager.elevateHeaders(10);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+        layoutManager.setStickyHeaderListener(new StickyHeaderListener() {
+            @Override
+            public void headerAttached(View headerView, int adapterPosition) {
+                Log.d("Listener", "Attached with position: " + adapterPosition);
+            }
+
+            @Override
+            public void headerDetached(View headerView, int adapterPosition) {
+                Log.d("Listener", "Detached with position: " + adapterPosition);
+            }
+        });
     }
 
     private List<Item> compileItems() {
