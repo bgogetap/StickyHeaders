@@ -4,7 +4,7 @@ android:
     - platform-tools
     - tools
 
-    - build-tools-24.0.1
+    - build-tools-24.0.3
 
     - android-24
 

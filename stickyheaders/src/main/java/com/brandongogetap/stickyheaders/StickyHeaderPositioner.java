@@ -12,18 +12,21 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewTreeObserver;
 
+import com.brandongogetap.stickyheaders.exposed.StickyHeaderListener;
+
 import java.util.List;
 import java.util.Map;
 
 final class StickyHeaderPositioner {
 
-    private static final int INVALID_POSITION = -1;
-
     static final int NO_ELEVATION = -1;
     static final int DEFAULT_ELEVATION = 5;
 
+    private static final int INVALID_POSITION = -1;
+
     private final RecyclerView recyclerView;
     private final boolean checkMargins;
+    private final boolean fallbackReset;
 
     private View currentHeader;
     private int lastBoundPosition = INVALID_POSITION;
@@ -34,16 +37,22 @@ final class StickyHeaderPositioner {
     private int cachedElevation = NO_ELEVATION;
     private boolean updateCurrentHeader;
     private RecyclerView.ViewHolder currentViewHolder;
+    @Nullable private StickyHeaderListener listener;
 
     StickyHeaderPositioner(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
         checkMargins = recyclerViewHasPadding();
-        recyclerView.getAdapter().registerAdapterDataObserver(
-                new RecyclerView.AdapterDataObserver() {
-                    @Override public void onChanged() {
-                        updateCurrentHeader = true;
-                    }
-                });
+        if (recyclerView.getAdapter() != null) {
+            fallbackReset = false;
+            recyclerView.getAdapter().registerAdapterDataObserver(
+                    new RecyclerView.AdapterDataObserver() {
+                        @Override public void onChanged() {
+                            updateCurrentHeader = true;
+                        }
+                    });
+        } else {
+            fallbackReset = true;
+        }
     }
 
     void setHeaderPositions(List<Integer> headerPositions) {
@@ -74,7 +83,7 @@ final class StickyHeaderPositioner {
              * See {@link #getHeaderPositionToShow(int, View)} for explanation.
              */
             if (headerAwayFromEdge(headerToCopy)) {
-                detachHeader();
+                detachHeader(lastBoundPosition);
                 lastBoundPosition = INVALID_POSITION;
             }
         }
@@ -178,18 +187,22 @@ final class StickyHeaderPositioner {
         return false;
     }
 
-    private void attachHeader(RecyclerView.ViewHolder viewHolder, int headerPosition) {
+    @VisibleForTesting
+    void attachHeader(RecyclerView.ViewHolder viewHolder, int headerPosition) {
         if (currentViewHolder == viewHolder) {
+            callDetach(lastBoundPosition);
             //noinspection unchecked
             recyclerView.getAdapter().onBindViewHolder(currentViewHolder, headerPosition);
+            callAttach(headerPosition);
             updateCurrentHeader = false;
             return;
         }
-        detachHeader();
+        detachHeader(lastBoundPosition);
         this.currentViewHolder = viewHolder;
         //noinspection unchecked
         recyclerView.getAdapter().onBindViewHolder(currentViewHolder, headerPosition);
         this.currentHeader = currentViewHolder.itemView;
+        callAttach(headerPosition);
         resolveElevationSettings(currentHeader.getContext());
         // Set to Invisible until we position it in #checkHeaderPositions.
         currentHeader.setVisibility(View.INVISIBLE);
@@ -232,11 +245,24 @@ final class StickyHeaderPositioner {
         }
     }
 
-    private void detachHeader() {
+    private void detachHeader(int position) {
         if (currentHeader != null) {
             getRecyclerParent().removeView(currentHeader);
+            callDetach(position);
             currentHeader = null;
             currentViewHolder = null;
+        }
+    }
+
+    private void callAttach(int position) {
+        if (listener != null) {
+            listener.headerAttached(currentHeader, position);
+        }
+    }
+
+    private void callDetach(int position) {
+        if (listener != null) {
+            listener.headerDetached(currentHeader, position);
         }
     }
 
@@ -276,7 +302,9 @@ final class StickyHeaderPositioner {
         if (getHeaderPositionToShow(firstVisiblePosition, null) == lastBoundPosition) {
             return;
         }
-        lastBoundPosition = INVALID_POSITION;
+        if (fallbackReset) {
+            lastBoundPosition = INVALID_POSITION;
+        }
     }
 
     private boolean recyclerViewHasPadding() {
@@ -313,10 +341,11 @@ final class StickyHeaderPositioner {
      * state in the child count variable in {@link android.widget.FrameLayout} layoutChildren method
      */
     private void safeDetachHeader() {
+        final int cachedPosition = lastBoundPosition;
         getRecyclerParent().post(new Runnable() {
             @Override public void run() {
                 if (dirty) {
-                    detachHeader();
+                    detachHeader(cachedPosition);
                 }
             }
         });
@@ -346,5 +375,9 @@ final class StickyHeaderPositioner {
     private float pxFromDp(Context context, int dp) {
         float scale = context.getResources().getDisplayMetrics().density;
         return dp * scale;
+    }
+
+    void setListener(@Nullable StickyHeaderListener listener) {
+        this.listener = listener;
     }
 }

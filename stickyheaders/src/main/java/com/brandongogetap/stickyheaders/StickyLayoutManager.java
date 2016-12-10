@@ -1,6 +1,7 @@
 package com.brandongogetap.stickyheaders;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.View;
 import com.brandongogetap.stickyheaders.ViewRetriever.RecyclerViewRetriever;
 import com.brandongogetap.stickyheaders.exposed.StickyHeader;
 import com.brandongogetap.stickyheaders.exposed.StickyHeaderHandler;
+import com.brandongogetap.stickyheaders.exposed.StickyHeaderListener;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -22,6 +24,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
     private RecyclerViewRetriever viewRetriever;
     private RecyclerView recyclerView;
     private int headerElevation = StickyHeaderPositioner.NO_ELEVATION;
+    @Nullable private StickyHeaderListener listener;
 
     public StickyLayoutManager(Context context, StickyHeaderHandler headerHandler) {
         this(context, VERTICAL, false, headerHandler);
@@ -121,12 +124,26 @@ public class StickyLayoutManager extends LinearLayoutManager {
         return visibleHeaders;
     }
 
-    @Override public void onAttachedToWindow(RecyclerView view) {
+    /**
+     * Register a callback to be invoked when a header is attached/re-bound or detached.
+     *
+     * @param listener The callback that will be invoked, or null to unset.
+     */
+    public void setStickyHeaderListener(@Nullable StickyHeaderListener listener) {
+        this.listener = listener;
+        if (positioner != null) {
+            positioner.setListener(listener);
+        }
+    }
+
+    @Override
+    public void onAttachedToWindow(RecyclerView view) {
         super.onAttachedToWindow(view);
         recyclerView = view;
         Preconditions.validateParentView(recyclerView);
         viewRetriever = new RecyclerViewRetriever(recyclerView);
         positioner = new StickyHeaderPositioner(recyclerView);
         positioner.setElevateHeaders(headerElevation);
+        positioner.setListener(listener);
     }
 }

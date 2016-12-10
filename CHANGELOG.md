@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+Version 0.4.0 *(2016-12-10)*
+----------------------------
+- Add option to set a listener to notify when headers are attached or detached.
+
 Version 0.3.4 *(2016-10-01)*
 ----------------------------
 - Fixes a crash when current sticky header is removed from the adapter data set and `notifyDataSetChanged` is called
