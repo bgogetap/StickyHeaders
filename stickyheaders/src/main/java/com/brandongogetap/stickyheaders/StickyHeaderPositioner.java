@@ -78,9 +78,9 @@ final class StickyHeaderPositioner {
                 lastBoundPosition = headerPositionToShow;
             }
         } else if (checkMargins) {
-            /**
-             * This could still be our firstVisiblePosition even if another view is visible above it.
-             * See {@link #getHeaderPositionToShow(int, View)} for explanation.
+            /*
+              This could still be our firstVisiblePosition even if another view is visible above it.
+              See `#getHeaderPositionToShow` for explanation.
              */
             if (headerAwayFromEdge(headerToCopy)) {
                 detachHeader(lastBoundPosition);
