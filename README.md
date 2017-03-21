@@ -3,7 +3,7 @@
 # StickyHeaders
 Easily add Sticky Headers to your RecyclerView
 
-###Setup
+### Setup
 Implement `StickyHeaderHandler` in your Presenter/Adapter/Activity or whatever class has access to your RecyclerView adapter dataset
 
 Make sure the parent of the RecyclerView is a FrameLayout or CoordinatorLayout (this will be verified at Runtime)
@@ -14,7 +14,7 @@ For items in your dataset that you want to act as sticky headers, implement the 
 
 That's it! See the example app for more in depth details.
 
-####Additional Features
+#### Additional Features
 Add elevation to your headers (animated in and out) on Lollipop and above:
 
 `layoutManager.elevateHeaders(true)` OR `layoutManager.setElevation(int dp)`
