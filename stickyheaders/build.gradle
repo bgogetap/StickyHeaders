@@ -22,11 +22,11 @@ group = PROJECT_GROUP_ID
 version = PROJECT_VERSION
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.3"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion rootProject.ext.minSdkVersion
     }
 }
 
