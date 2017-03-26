@@ -307,6 +307,10 @@ final class StickyHeaderPositioner {
         }
     }
 
+    void clearHeader() {
+        detachHeader(lastBoundPosition);
+    }
+
     private boolean recyclerViewHasPadding() {
         return recyclerView.getPaddingLeft() > 0
                 || recyclerView.getPaddingRight() > 0

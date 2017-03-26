@@ -136,6 +136,13 @@ public class StickyLayoutManager extends LinearLayoutManager {
         }
     }
 
+    @Override public void removeAndRecycleAllViews(RecyclerView.Recycler recycler) {
+        super.removeAndRecycleAllViews(recycler);
+        if (positioner != null) {
+            positioner.clearHeader();
+        }
+    }
+
     @Override
     public void onAttachedToWindow(RecyclerView view) {
         super.onAttachedToWindow(view);

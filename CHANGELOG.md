@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+Version 0.4.1 *(2017-3-27)*
+----------------------------
+- Clear attached header, if any, when a new `LayoutManager` is set on the `RecyclerView`.
+
 Version 0.4.0 *(2016-12-10)*
 ----------------------------
 - Add option to set a listener to notify when headers are attached or detached.

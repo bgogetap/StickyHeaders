@@ -11,6 +11,7 @@ import com.brandongogetap.stickyheaders.exposed.StickyHeaderHandler;
 
 import java.util.List;
 
+import static android.support.v7.widget.RecyclerView.NO_POSITION;
 import static android.view.LayoutInflater.from;
 
 final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.BaseViewHolder>
@@ -35,9 +36,13 @@ final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.BaseVie
             @Override public void onClick(View v) {
                 // This is unsafe to do in OnClickListeners attached to sticky headers. The adapter
                 // position of the holder will be out of sync if any items have been added/removed.
+                // If a click listener needs to be set on a sticky header, it is recommended to identify the header
+                // based on its backing model, rather than position in the data set.
                 int position = viewHolder.getAdapterPosition();
-                data.remove(position);
-                notifyDataSetChanged();
+                if (position != NO_POSITION) {
+                    data.remove(position);
+                    notifyDataSetChanged();
+                }
             }
         });
         return viewHolder;
