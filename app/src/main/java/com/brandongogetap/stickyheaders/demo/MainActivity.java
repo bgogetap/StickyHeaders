@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
         List<Item> items = compileItems();
         RecyclerAdapter adapter = new RecyclerAdapter(items);
-        StickyLayoutManager layoutManager = new StickyLayoutManager(this, adapter);
+        StickyLayoutManager layoutManager = new TopSnappedStickyLayoutManager(this, adapter);
         layoutManager.elevateHeaders(true); // Default elevation of 5dp
         // You can also specify a specific dp for elevation
 //        layoutManager.elevateHeaders(10);
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Item> compileItems() {
         List<Item> items = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            if (i % 4 == 0 && i > 0) {
+            if (i == 2 || (i % 4 == 0 && i > 0)) {
                 items.add(new HeaderItem("Header at " + i, ""));
             } else {
                 items.add(new Item("Item at " + i, "Item description at " + i));

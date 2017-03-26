@@ -26,13 +26,13 @@ public class DemoStickyHeadersTest {
 
     @Test
     public void headerIsStickyAfterScrollingPast() {
-        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToPosition(15));
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToPosition(3));
         onView(withId(R.id.header_view)).check(matches(isCompletelyDisplayed()));
     }
 
     @Test
     public void headerRemainsStickyAfterRotation() {
-        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToPosition(15));
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToPosition(3));
         rotateScreen();
         onView(withId(R.id.header_view)).check(matches(isCompletelyDisplayed()));
     }
