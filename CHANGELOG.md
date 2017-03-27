@@ -1,5 +1,8 @@
 Change Log
 ==========
+Version 0.4.2 *(2017-3-27)*
+----------------------------
+- Remove `<application>` tag from library manifest.
 
 Version 0.4.1 *(2017-3-27)*
 ----------------------------
