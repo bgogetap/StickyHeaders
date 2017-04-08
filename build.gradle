@@ -27,5 +27,5 @@ ext {
     compileSdkVersion = 25
     buildToolsVersion = '25.0.2'
     mockitoVersion = '1.10.19'
-    supportLibraryVersion = '25.3.0'
+    supportLibraryVersion = '25.3.1'
 }

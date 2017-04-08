@@ -83,8 +83,14 @@ public class StickyLayoutManager extends LinearLayoutManager {
 
     private void cacheHeaderPositions() {
         headerPositions.clear();
-        for (int i = 0; i < headerHandler.getAdapterData().size(); i++) {
-            if (headerHandler.getAdapterData().get(i) instanceof StickyHeader) {
+        List<?> adapterData = headerHandler.getAdapterData();
+        if (adapterData == null) {
+            positioner.setHeaderPositions(headerPositions);
+            return;
+        }
+
+        for (int i = 0; i < adapterData.size(); i++) {
+            if (adapterData.get(i) instanceof StickyHeader) {
                 headerPositions.add(i);
             }
         }

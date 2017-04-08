@@ -65,7 +65,7 @@ final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.BaseVie
     }
 
     @Override public int getItemCount() {
-        return data.size();
+        return data != null ? data.size() : 0;
     }
 
     @Override public int getItemViewType(int position) {
