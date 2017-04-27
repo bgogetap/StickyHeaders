@@ -1,5 +1,9 @@
 Change Log
 ==========
+Version 0.4.4 *(2017-4-26)*
+----------------------------
+- Fix issue where a previously stickied header is not detached after adapter updated with a sticky header at position 0 which also happens to be the first visible position.
+ 
 Version 0.4.3 *(2017-4-8)*
 ----------------------------
 - Fix crash when adapter data set is null
