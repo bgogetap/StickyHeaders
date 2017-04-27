@@ -65,13 +65,12 @@ final class StickyHeaderPositioner {
                 firstVisiblePosition, visibleHeaders.get(firstVisiblePosition));
         View headerToCopy = visibleHeaders.get(headerPositionToShow);
         if (headerPositionToShow != lastBoundPosition || updateCurrentHeader) {
-            if (headerPositionToShow == INVALID_POSITION) {
+            if (headerPositionToShow == INVALID_POSITION ||
+                    checkMargins && headerAwayFromEdge(headerToCopy)) { // We don't want to attach yet if header view is not at edge
                 dirty = true;
                 safeDetachHeader();
                 lastBoundPosition = INVALID_POSITION;
             } else {
-                // We don't want to attach yet if header view is not at edge
-                if (checkMargins && headerAwayFromEdge(headerToCopy)) return;
                 RecyclerView.ViewHolder viewHolder =
                         viewRetriever.getViewHolderForPosition(headerPositionToShow);
                 attachHeader(viewHolder, headerPositionToShow);
@@ -157,7 +156,7 @@ final class StickyHeaderPositioner {
      * above the 10dp threshold will not be recognized as firstVisiblePosition by the LayoutManager.
      * <p>
      * To remedy this, we are checking if the firstVisiblePosition (according to the LayoutManager)
-     * is a header (headerForPosition will not be null). If it is, we check it's Y. If #getY is
+     * is a header (headerForPosition will not be null). If it is, we check its Y. If #getY is
      * greater than 0 then we know it is actually not the firstVisiblePosition, and return the
      * preceding header position (if available).
      */
