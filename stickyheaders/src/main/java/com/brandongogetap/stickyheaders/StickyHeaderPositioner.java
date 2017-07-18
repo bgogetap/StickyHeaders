@@ -59,8 +59,7 @@ final class StickyHeaderPositioner {
         this.headerPositions = headerPositions;
     }
 
-    void updateHeaderState(int firstVisiblePosition, Map<Integer, View> visibleHeaders,
-            ViewRetriever viewRetriever) {
+    void updateHeaderState(int firstVisiblePosition, Map<Integer, View> visibleHeaders, ViewRetriever viewRetriever, boolean shouldForceNewViewHolder) {
         int headerPositionToShow = getHeaderPositionToShow(
                 firstVisiblePosition, visibleHeaders.get(firstVisiblePosition));
         View headerToCopy = visibleHeaders.get(headerPositionToShow);
@@ -72,7 +71,7 @@ final class StickyHeaderPositioner {
                 lastBoundPosition = INVALID_POSITION;
             } else {
                 RecyclerView.ViewHolder viewHolder =
-                        viewRetriever.getViewHolderForPosition(headerPositionToShow);
+                        viewRetriever.getViewHolderForPosition(headerPositionToShow, shouldForceNewViewHolder);
                 attachHeader(viewHolder, headerPositionToShow);
                 lastBoundPosition = headerPositionToShow;
             }

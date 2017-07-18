@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -65,8 +66,8 @@ final class StickyHeaderPositionerRobot {
     StickyHeaderPositionerRobot setupPosition(int firstVisiblePosition) {
         ViewRetriever viewRetriever = mock(ViewRetriever.class);
         when(currentHeader.getHeight()).thenReturn(200);
-        when(viewRetriever.getViewHolderForPosition(anyInt())).thenReturn(viewHolder);
-        positioner.updateHeaderState(firstVisiblePosition, Collections.<Integer, View>emptyMap(), viewRetriever);
+        when(viewRetriever.getViewHolderForPosition(anyInt(), anyBoolean())).thenReturn(viewHolder);
+        positioner.updateHeaderState(firstVisiblePosition, Collections.<Integer, View>emptyMap(), viewRetriever, false);
         return this;
     }
 

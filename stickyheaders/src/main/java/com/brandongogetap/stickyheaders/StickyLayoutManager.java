@@ -78,7 +78,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
         cacheHeaderPositions();
         positioner.reset(getOrientation(), findFirstVisibleItemPosition());
         positioner.updateHeaderState(
-                findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever);
+                findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever, false);
     }
 
     private void cacheHeaderPositions() {
@@ -102,7 +102,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
         int scroll = super.scrollVerticallyBy(dy, recycler, state);
         if (Math.abs(scroll) > 0) {
             positioner.updateHeaderState(
-                    findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever);
+                    findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever, scroll < 0);
         }
         return scroll;
     }
@@ -112,7 +112,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
         int scroll = super.scrollHorizontallyBy(dx, recycler, state);
         if (Math.abs(scroll) > 0) {
             positioner.updateHeaderState(
-                    findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever);
+                    findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever, scroll < 0);
         }
         return scroll;
     }

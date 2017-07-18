@@ -14,6 +14,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private boolean shouldBelongHeaderText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +48,12 @@ public class MainActivity extends AppCompatActivity {
         List<Item> items = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             if (i == 2 || (i % 4 == 0 && i > 0)) {
-                items.add(new HeaderItem("Header at " + i, ""));
+                shouldBelongHeaderText = !shouldBelongHeaderText;
+                if (shouldBelongHeaderText) {
+                    items.add(new HeaderItem("Header at " + i, "header text header text header text header text header text header text header text header text header text"));
+                }else {
+                    items.add(new HeaderItem("Header at " + i, "header text"));
+                }
             } else {
                 items.add(new Item("Item at " + i, "Item description at " + i));
             }
