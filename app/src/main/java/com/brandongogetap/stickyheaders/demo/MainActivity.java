@@ -14,6 +14,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private boolean shouldBelongHeaderText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
         List<Item> items = compileItems();
         RecyclerAdapter adapter = new RecyclerAdapter(items);
-        StickyLayoutManager layoutManager = new TopSnappedStickyLayoutManager(this, adapter);
+        StickyLayoutManager layoutManager = new TopSnappedStickyLayoutManager(this, adapter, getResources().getDimensionPixelOffset(R.dimen.test_minus_margin_top));
         layoutManager.elevateHeaders(true); // Default elevation of 5dp
         // You can also specify a specific dp for elevation
 //        layoutManager.elevateHeaders(10);
@@ -46,7 +48,12 @@ public class MainActivity extends AppCompatActivity {
         List<Item> items = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             if (i == 2 || (i % 4 == 0 && i > 0)) {
-                items.add(new HeaderItem("Header at " + i, ""));
+                shouldBelongHeaderText = !shouldBelongHeaderText;
+                if (shouldBelongHeaderText) {
+                    items.add(new HeaderItem("Header at " + i, "header text header text header text header text header text header text header text header text header text"));
+                }else {
+                    items.add(new HeaderItem("Header at " + i, "header text"));
+                }
             } else {
                 items.add(new Item("Item at " + i, "Item description at " + i));
             }

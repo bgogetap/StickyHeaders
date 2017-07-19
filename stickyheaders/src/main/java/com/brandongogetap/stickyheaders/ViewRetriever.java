@@ -5,7 +5,7 @@ import android.view.ViewGroup;
 
 interface ViewRetriever {
 
-    RecyclerView.ViewHolder getViewHolderForPosition(int headerPositionToShow);
+    RecyclerView.ViewHolder getViewHolderForPosition(int position, boolean forceNewViewHolder);
 
     final class RecyclerViewRetriever implements ViewRetriever {
 
@@ -20,13 +20,13 @@ interface ViewRetriever {
         }
 
         @Override
-        public RecyclerView.ViewHolder getViewHolderForPosition(int position) {
-            if (currentViewType != recyclerView.getAdapter().getItemViewType(position)) {
+        public RecyclerView.ViewHolder getViewHolderForPosition(int position, boolean forceNewViewHolder) {
+            if (currentViewType != recyclerView.getAdapter().getItemViewType(position) || forceNewViewHolder) {
                 currentViewType = recyclerView.getAdapter().getItemViewType(position);
-                currentViewHolder = recyclerView.getAdapter().createViewHolder(
-                        (ViewGroup) recyclerView.getParent(), currentViewType);
+                currentViewHolder = recyclerView.getAdapter().createViewHolder((ViewGroup) recyclerView.getParent(), currentViewType);
             }
             return currentViewHolder;
         }
     }
 }
+

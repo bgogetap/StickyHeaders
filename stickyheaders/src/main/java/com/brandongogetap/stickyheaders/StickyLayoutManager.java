@@ -21,13 +21,21 @@ public class StickyLayoutManager extends LinearLayoutManager {
     private StickyHeaderPositioner positioner;
     private StickyHeaderHandler headerHandler;
     private List<Integer> headerPositions;
-    private RecyclerViewRetriever viewRetriever;
+    private ViewRetriever.RecyclerViewRetriever viewRetriever;
     private RecyclerView recyclerView;
     private int headerElevation = StickyHeaderPositioner.NO_ELEVATION;
-    @Nullable private StickyHeaderListener listener;
+    @Nullable
+    private StickyHeaderListener listener;
+    private int headerMarginTop;
 
     public StickyLayoutManager(Context context, StickyHeaderHandler headerHandler) {
         this(context, VERTICAL, false, headerHandler);
+        init(headerHandler);
+    }
+
+    public StickyLayoutManager(Context context, StickyHeaderHandler headerHandler, int headerMarginTop) {
+        this(context, VERTICAL, false, headerHandler);
+        this.headerMarginTop = headerMarginTop;
         init(headerHandler);
     }
 
@@ -44,13 +52,13 @@ public class StickyLayoutManager extends LinearLayoutManager {
      * Enable or disable elevation for Sticky Headers.
      * <p>
      * If you want to specify a specific amount of elevation, use
-     * {@link StickyLayoutManager#elevateHeaders(int)}
+     * {@link com.brandongogetap.stickyheaders.StickyLayoutManager#elevateHeaders(int)}
      *
      * @param elevateHeaders Enable Sticky Header elevation. Default is false.
      */
     public void elevateHeaders(boolean elevateHeaders) {
-        this.headerElevation = elevateHeaders ?
-                StickyHeaderPositioner.DEFAULT_ELEVATION : StickyHeaderPositioner.NO_ELEVATION;
+        this.headerElevation = elevateHeaders
+                ? StickyHeaderPositioner.DEFAULT_ELEVATION : StickyHeaderPositioner.NO_ELEVATION;
         elevateHeaders(headerElevation);
     }
 
@@ -78,7 +86,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
         cacheHeaderPositions();
         positioner.reset(getOrientation(), findFirstVisibleItemPosition());
         positioner.updateHeaderState(
-                findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever);
+                findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever, false);
     }
 
     private void cacheHeaderPositions() {
@@ -102,7 +110,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
         int scroll = super.scrollVerticallyBy(dy, recycler, state);
         if (Math.abs(scroll) > 0) {
             positioner.updateHeaderState(
-                    findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever);
+                    findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever, scroll < 0);
         }
         return scroll;
     }
@@ -112,7 +120,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
         int scroll = super.scrollHorizontallyBy(dx, recycler, state);
         if (Math.abs(scroll) > 0) {
             positioner.updateHeaderState(
-                    findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever);
+                    findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever, scroll < 0);
         }
         return scroll;
     }
@@ -154,8 +162,8 @@ public class StickyLayoutManager extends LinearLayoutManager {
         super.onAttachedToWindow(view);
         recyclerView = view;
         Preconditions.validateParentView(recyclerView);
-        viewRetriever = new RecyclerViewRetriever(recyclerView);
-        positioner = new StickyHeaderPositioner(recyclerView);
+        viewRetriever = new ViewRetriever.RecyclerViewRetriever(recyclerView);
+        positioner = new StickyHeaderPositioner(recyclerView, headerMarginTop);
         positioner.setElevateHeaders(headerElevation);
         positioner.setListener(listener);
     }

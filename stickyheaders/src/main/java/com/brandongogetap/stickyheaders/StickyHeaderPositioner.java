@@ -37,16 +37,21 @@ final class StickyHeaderPositioner {
     private int cachedElevation = NO_ELEVATION;
     private boolean updateCurrentHeader;
     private RecyclerView.ViewHolder currentViewHolder;
-    @Nullable private StickyHeaderListener listener;
+    @Nullable
+    private StickyHeaderListener listener;
+    private int headerMarginTop;
 
-    StickyHeaderPositioner(RecyclerView recyclerView) {
+
+    StickyHeaderPositioner(RecyclerView recyclerView, int headerMarginTop) {
         this.recyclerView = recyclerView;
+        this.headerMarginTop = headerMarginTop;
         checkMargins = recyclerViewHasPadding();
         if (recyclerView.getAdapter() != null) {
             fallbackReset = false;
             recyclerView.getAdapter().registerAdapterDataObserver(
                     new RecyclerView.AdapterDataObserver() {
-                        @Override public void onChanged() {
+                        @Override
+                        public void onChanged() {
                             updateCurrentHeader = true;
                         }
                     });
@@ -59,39 +64,46 @@ final class StickyHeaderPositioner {
         this.headerPositions = headerPositions;
     }
 
-    void updateHeaderState(int firstVisiblePosition, Map<Integer, View> visibleHeaders,
-            ViewRetriever viewRetriever) {
+    void updateHeaderState(int firstVisiblePosition, Map<Integer, View> visibleHeaders, ViewRetriever viewRetriever, boolean shouldForceNewViewHolder) {
         int headerPositionToShow = getHeaderPositionToShow(
                 firstVisiblePosition, visibleHeaders.get(firstVisiblePosition));
         View headerToCopy = visibleHeaders.get(headerPositionToShow);
+        forceSetHeaderYPosition();
         if (headerPositionToShow != lastBoundPosition || updateCurrentHeader) {
-            if (headerPositionToShow == INVALID_POSITION ||
-                    checkMargins && headerAwayFromEdge(headerToCopy)) { // We don't want to attach yet if header view is not at edge
+            if (headerPositionToShow == INVALID_POSITION
+                    || checkMargins && headerAwayFromEdge(headerToCopy)) { // We don't want to attach yet if header view is not at edge
                 dirty = true;
                 safeDetachHeader();
                 lastBoundPosition = INVALID_POSITION;
             } else {
                 RecyclerView.ViewHolder viewHolder =
-                        viewRetriever.getViewHolderForPosition(headerPositionToShow);
+                        viewRetriever.getViewHolderForPosition(headerPositionToShow, shouldForceNewViewHolder);
                 attachHeader(viewHolder, headerPositionToShow);
                 lastBoundPosition = headerPositionToShow;
             }
-        } else if (checkMargins) {
+        } else if (checkMargins && headerAwayFromEdge(headerToCopy)) {
             /*
               This could still be our firstVisiblePosition even if another view is visible above it.
               See `#getHeaderPositionToShow` for explanation.
              */
-            if (headerAwayFromEdge(headerToCopy)) {
-                detachHeader(lastBoundPosition);
-                lastBoundPosition = INVALID_POSITION;
-            }
+            detachHeader(lastBoundPosition);
+            lastBoundPosition = INVALID_POSITION;
         }
         checkHeaderPositions(visibleHeaders);
-        recyclerView.post(new Runnable() {
-            @Override public void run() {
-                checkElevation();
-            }
-        });
+        if (headerElevation != NO_ELEVATION) {
+            recyclerView.post(new Runnable() {
+                @Override
+                public void run() {
+                    checkElevation();
+                }
+            });
+        }
+    }
+
+    private void forceSetHeaderYPosition() {
+        if (currentHeader != null && currentHeader.getY() != headerMarginTop) {
+            currentHeader.setY(headerMarginTop);
+        }
     }
 
     // This checks visible headers and their positions to determine if the sticky header needs
@@ -112,7 +124,6 @@ final class StickyHeaderPositioner {
             }
             View nextHeader = entry.getValue();
             reset = offsetHeader(nextHeader) == -1;
-            break;
         }
         if (reset) resetTranslation();
         currentHeader.setVisibility(View.VISIBLE);
@@ -123,7 +134,7 @@ final class StickyHeaderPositioner {
         float offset = -1;
         if (shouldOffsetHeader) {
             if (orientation == LinearLayoutManager.VERTICAL) {
-                offset = -(currentHeader.getHeight() - nextHeader.getY());
+                offset = -(currentHeader.getHeight() - (nextHeader.getY() - headerMarginTop));
                 currentHeader.setTranslationY(offset);
             } else {
                 offset = -(currentHeader.getWidth() - nextHeader.getX());
@@ -135,7 +146,7 @@ final class StickyHeaderPositioner {
 
     private boolean shouldOffsetHeader(View nextHeader) {
         if (orientation == LinearLayoutManager.VERTICAL) {
-            return nextHeader.getY() < currentHeader.getHeight();
+            return nextHeader.getY() < (currentHeader.getHeight() + headerMarginTop);
         } else {
             return nextHeader.getX() < currentHeader.getWidth();
         }
@@ -180,14 +191,14 @@ final class StickyHeaderPositioner {
 
     private boolean headerIsOffset(View headerForPosition) {
         if (headerForPosition != null) {
-            return orientation == LinearLayoutManager.VERTICAL ?
-                    headerForPosition.getY() > 0 : headerForPosition.getX() > 0;
+            return orientation == LinearLayoutManager.VERTICAL
+                    ? headerForPosition.getY() > 0 : headerForPosition.getX() > 0;
         }
         return false;
     }
 
     @VisibleForTesting
-    void attachHeader(RecyclerView.ViewHolder viewHolder, int headerPosition) {
+    synchronized void attachHeader(RecyclerView.ViewHolder viewHolder, int headerPosition) {
         if (currentViewHolder == viewHolder) {
             callDetach(lastBoundPosition);
             //noinspection unchecked
@@ -197,10 +208,12 @@ final class StickyHeaderPositioner {
             return;
         }
         detachHeader(lastBoundPosition);
+        updateCurrentHeader = false;
         this.currentViewHolder = viewHolder;
         //noinspection unchecked
         recyclerView.getAdapter().onBindViewHolder(currentViewHolder, headerPosition);
         this.currentHeader = currentViewHolder.itemView;
+        currentHeader.setClickable(true);
         callAttach(headerPosition);
         resolveElevationSettings(currentHeader.getContext());
         // Set to Invisible until we position it in #checkHeaderPositions.
@@ -236,11 +249,10 @@ final class StickyHeaderPositioner {
     }
 
     private void settleHeader() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (currentHeader.getTag() != null) {
-                currentHeader.setTag(null);
-                currentHeader.animate().z(0);
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && currentHeader.getTag() != null) {
+            currentHeader.setTag(null);
+            currentHeader.animate().z(0);
+
         }
     }
 
@@ -278,19 +290,19 @@ final class StickyHeaderPositioner {
     }
 
     private void matchMarginsToPadding(MarginLayoutParams layoutParams) {
-        @Px int leftMargin = orientation == LinearLayoutManager.VERTICAL ?
-                recyclerView.getPaddingLeft() : 0;
-        @Px int topMargin = orientation == LinearLayoutManager.VERTICAL ?
-                0 : recyclerView.getPaddingTop();
-        @Px int rightMargin = orientation == LinearLayoutManager.VERTICAL ?
-                recyclerView.getPaddingRight() : 0;
+        @Px int leftMargin = orientation == LinearLayoutManager.VERTICAL
+                ? recyclerView.getPaddingLeft() : 0;
+        @Px int topMargin = orientation == LinearLayoutManager.VERTICAL
+                ? headerMarginTop : recyclerView.getPaddingTop();
+        @Px int rightMargin = orientation == LinearLayoutManager.VERTICAL
+                ? recyclerView.getPaddingRight() : 0;
         layoutParams.setMargins(leftMargin, topMargin, rightMargin, 0);
     }
 
     private boolean headerAwayFromEdge(View headerToCopy) {
         if (headerToCopy != null) {
-            return orientation == LinearLayoutManager.VERTICAL ?
-                    headerToCopy.getY() > 0 : headerToCopy.getX() > 0;
+            return orientation == LinearLayoutManager.VERTICAL
+                    ? headerToCopy.getY() > headerMarginTop : headerToCopy.getX() > headerMarginTop;
         }
         return false;
     }
@@ -323,7 +335,8 @@ final class StickyHeaderPositioner {
     private void waitForLayoutAndRetry(final Map<Integer, View> visibleHeaders) {
         currentHeader.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override public void onGlobalLayout() {
+                    @Override
+                    public void onGlobalLayout() {
                         // If header was removed during layout
                         if (currentHeader == null) return;
 
@@ -346,7 +359,8 @@ final class StickyHeaderPositioner {
     private void safeDetachHeader() {
         final int cachedPosition = lastBoundPosition;
         getRecyclerParent().post(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 if (dirty) {
                     detachHeader(cachedPosition);
                 }
@@ -354,7 +368,8 @@ final class StickyHeaderPositioner {
         });
     }
 
-    @VisibleForTesting int getLastBoundPosition() {
+    @VisibleForTesting
+    int getLastBoundPosition() {
         return lastBoundPosition;
     }
 
