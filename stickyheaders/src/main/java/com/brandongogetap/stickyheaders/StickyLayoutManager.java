@@ -25,9 +25,16 @@ public class StickyLayoutManager extends LinearLayoutManager {
     private RecyclerView recyclerView;
     private int headerElevation = StickyHeaderPositioner.NO_ELEVATION;
     @Nullable private StickyHeaderListener listener;
+    private int headerMarginTop;
 
     public StickyLayoutManager(Context context, StickyHeaderHandler headerHandler) {
         this(context, VERTICAL, false, headerHandler);
+        init(headerHandler);
+    }
+
+    public StickyLayoutManager(Context context, StickyHeaderHandler headerHandler, int headerMarginTop) {
+        this(context, VERTICAL, false, headerHandler);
+        this.headerMarginTop = headerMarginTop;
         init(headerHandler);
     }
 
@@ -155,7 +162,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
         recyclerView = view;
         Preconditions.validateParentView(recyclerView);
         viewRetriever = new RecyclerViewRetriever(recyclerView);
-        positioner = new StickyHeaderPositioner(recyclerView);
+        positioner = new StickyHeaderPositioner(recyclerView, headerMarginTop);
         positioner.setElevateHeaders(headerElevation);
         positioner.setListener(listener);
     }

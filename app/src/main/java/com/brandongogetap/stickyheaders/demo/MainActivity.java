@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
         List<Item> items = compileItems();
         RecyclerAdapter adapter = new RecyclerAdapter(items);
-        StickyLayoutManager layoutManager = new TopSnappedStickyLayoutManager(this, adapter);
+        StickyLayoutManager layoutManager = new TopSnappedStickyLayoutManager(this, adapter, getResources().getDimensionPixelOffset(R.dimen.test_minus_margin_top));
         layoutManager.elevateHeaders(true); // Default elevation of 5dp
         // You can also specify a specific dp for elevation
 //        layoutManager.elevateHeaders(10);
