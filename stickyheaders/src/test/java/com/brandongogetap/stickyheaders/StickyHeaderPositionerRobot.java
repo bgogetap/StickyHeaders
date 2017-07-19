@@ -40,7 +40,7 @@ final class StickyHeaderPositionerRobot {
         when(recyclerView.getParent()).thenReturn(parent);
         when(recyclerView.getAdapter()).thenReturn(mock(RecyclerView.Adapter.class));
         when(parent.getViewTreeObserver()).thenReturn(mock(ViewTreeObserver.class));
-        positioner = new StickyHeaderPositioner(recyclerView);
+        positioner = new StickyHeaderPositioner(recyclerView, 0);
         positioner.setHeaderPositions(new ArrayList<Integer>());
         positioner.reset(LinearLayoutManager.VERTICAL, 0);
         positioner.setListener(listener);
