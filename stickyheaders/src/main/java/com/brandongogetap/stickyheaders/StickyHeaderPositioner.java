@@ -104,10 +104,9 @@ final class StickyHeaderPositioner {
             waitForLayoutAndRetry(visibleHeaders);
             return;
         }
-        boolean reset = false;
+        boolean reset = true;
         for (Map.Entry<Integer, View> entry : visibleHeaders.entrySet()) {
-            if (entry.getKey() == lastBoundPosition) {
-                reset = true;
+            if (entry.getKey() <= lastBoundPosition) {
                 continue;
             }
             View nextHeader = entry.getValue();
