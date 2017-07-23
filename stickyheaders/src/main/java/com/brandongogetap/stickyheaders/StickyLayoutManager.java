@@ -41,6 +41,18 @@ public class StickyLayoutManager extends LinearLayoutManager {
     }
 
     /**
+     * Register a callback to be invoked when a header is attached/re-bound or detached.
+     *
+     * @param listener The callback that will be invoked, or null to unset.
+     */
+    public void setStickyHeaderListener(@Nullable StickyHeaderListener listener) {
+        this.listener = listener;
+        if (positioner != null) {
+            positioner.setListener(listener);
+        }
+    }
+
+    /**
      * Enable or disable elevation for Sticky Headers.
      * <p>
      * If you want to specify a specific amount of elevation, use
@@ -75,26 +87,6 @@ public class StickyLayoutManager extends LinearLayoutManager {
         }
     }
 
-    private void cacheHeaderPositions() {
-        headerPositions.clear();
-        List<?> adapterData = headerHandler.getAdapterData();
-        if (adapterData == null) {
-            if (positioner != null) {
-                positioner.setHeaderPositions(headerPositions);
-            }
-            return;
-        }
-
-        for (int i = 0; i < adapterData.size(); i++) {
-            if (adapterData.get(i) instanceof StickyHeader) {
-                headerPositions.add(i);
-            }
-        }
-        if (positioner != null) {
-            positioner.setHeaderPositions(headerPositions);
-        }
-    }
-
     @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
         int scroll = super.scrollVerticallyBy(dy, recycler, state);
@@ -117,31 +109,6 @@ public class StickyLayoutManager extends LinearLayoutManager {
             }
         }
         return scroll;
-    }
-
-    private Map<Integer, View> getVisibleHeaders() {
-        Map<Integer, View> visibleHeaders = new LinkedHashMap<>();
-
-        for (int i = 0; i < getChildCount(); i++) {
-            View view = getChildAt(i);
-            int dataPosition = getPosition(view);
-            if (headerPositions.contains(dataPosition)) {
-                visibleHeaders.put(dataPosition, view);
-            }
-        }
-        return visibleHeaders;
-    }
-
-    /**
-     * Register a callback to be invoked when a header is attached/re-bound or detached.
-     *
-     * @param listener The callback that will be invoked, or null to unset.
-     */
-    public void setStickyHeaderListener(@Nullable StickyHeaderListener listener) {
-        this.listener = listener;
-        if (positioner != null) {
-            positioner.setListener(listener);
-        }
     }
 
     @Override public void removeAndRecycleAllViews(RecyclerView.Recycler recycler) {
@@ -169,5 +136,38 @@ public class StickyLayoutManager extends LinearLayoutManager {
     private void runPositionerInit() {
         positioner.reset(getOrientation(), findFirstVisibleItemPosition());
         positioner.updateHeaderState(findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever);
+    }
+
+    private Map<Integer, View> getVisibleHeaders() {
+        Map<Integer, View> visibleHeaders = new LinkedHashMap<>();
+
+        for (int i = 0; i < getChildCount(); i++) {
+            View view = getChildAt(i);
+            int dataPosition = getPosition(view);
+            if (headerPositions.contains(dataPosition)) {
+                visibleHeaders.put(dataPosition, view);
+            }
+        }
+        return visibleHeaders;
+    }
+
+    private void cacheHeaderPositions() {
+        headerPositions.clear();
+        List<?> adapterData = headerHandler.getAdapterData();
+        if (adapterData == null) {
+            if (positioner != null) {
+                positioner.setHeaderPositions(headerPositions);
+            }
+            return;
+        }
+
+        for (int i = 0; i < adapterData.size(); i++) {
+            if (adapterData.get(i) instanceof StickyHeader) {
+                headerPositions.add(i);
+            }
+        }
+        if (positioner != null) {
+            positioner.setHeaderPositions(headerPositions);
+        }
     }
 }
