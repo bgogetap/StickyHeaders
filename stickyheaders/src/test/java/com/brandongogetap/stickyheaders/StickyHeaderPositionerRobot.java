@@ -19,6 +19,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -51,6 +52,7 @@ final class StickyHeaderPositionerRobot {
                 return super.toString();
             }
         };
+        when(currentHeader.getViewTreeObserver()).thenReturn(mock(ViewTreeObserver.class));
     }
 
     static StickyHeaderPositionerRobot create() {
@@ -109,7 +111,7 @@ final class StickyHeaderPositionerRobot {
         visibleHeaderMap.put(6, nextHeader);
         when(nextHeader.getY()).thenReturn(nextHeaderTop);
         positioner.checkHeaderPositions(visibleHeaderMap);
-        verify(currentHeader).setTranslationY(expectedOffset);
+        verify(currentHeader, atLeastOnce()).setTranslationY(expectedOffset);
         return this;
     }
 }

@@ -117,6 +117,36 @@ final class StickyHeaderPositioner {
         currentHeader.setVisibility(View.VISIBLE);
     }
 
+    void setElevateHeaders(int dpElevation) {
+        if (dpElevation != NO_ELEVATION) {
+            // Context may not be available at this point, so caching the dp value to be converted
+            // into pixels after first header is attached.
+            cachedElevation = dpElevation;
+        } else {
+            headerElevation = NO_ELEVATION;
+            cachedElevation = NO_ELEVATION;
+        }
+    }
+
+    void reset(int orientation, int firstVisiblePosition) {
+        this.orientation = orientation;
+        // Don't reset/detach if same header position is to be attached
+        if (getHeaderPositionToShow(firstVisiblePosition, null) == lastBoundPosition) {
+            return;
+        }
+        if (fallbackReset) {
+            lastBoundPosition = INVALID_POSITION;
+        }
+    }
+
+    void clearHeader() {
+        detachHeader(lastBoundPosition);
+    }
+
+    void setListener(@Nullable StickyHeaderListener listener) {
+        this.listener = listener;
+    }
+
     private float offsetHeader(View nextHeader) {
         boolean shouldOffsetHeader = shouldOffsetHeader(nextHeader);
         float offset = -1;
@@ -191,6 +221,7 @@ final class StickyHeaderPositioner {
             callDetach(lastBoundPosition);
             //noinspection unchecked
             recyclerView.getAdapter().onBindViewHolder(currentViewHolder, headerPosition);
+            checkTranslation();
             callAttach(headerPosition);
             updateCurrentHeader = false;
             return;
@@ -210,6 +241,62 @@ final class StickyHeaderPositioner {
             updateLayoutParams(currentHeader);
         }
         dirty = false;
+    }
+
+    private int currentDimension() {
+        if (currentHeader == null) {
+            return 0;
+        }
+        if (orientation == LinearLayoutManager.VERTICAL) {
+            return currentHeader.getHeight();
+        } else {
+            return currentHeader.getWidth();
+        }
+    }
+
+    private boolean headerHasTranslation() {
+        if (currentHeader == null) {
+            return false;
+        }
+        if (orientation == LinearLayoutManager.VERTICAL) {
+            return currentHeader.getTranslationY() < 0;
+        } else {
+            return currentHeader.getTranslationX() < 0;
+        }
+    }
+
+    private void updateTranslation(int diff) {
+        if (currentHeader == null) {
+            return;
+        }
+        if (orientation == LinearLayoutManager.VERTICAL) {
+            currentHeader.setTranslationY(currentHeader.getTranslationY() + diff);
+        } else {
+            currentHeader.setTranslationX(currentHeader.getTranslationX() + diff);
+        }
+    }
+
+    /**
+     * When a view is re-bound using the same view holder, the height may have changed. If the header has translation
+     * applied, this could cause a flickering if the view's height has increased.
+     */
+    private void checkTranslation() {
+        currentHeader.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            int previous = currentDimension();
+
+            @Override public void onGlobalLayout() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    currentHeader.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                } else {
+                    //noinspection deprecation
+                    currentHeader.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                }
+                int newDimen = currentDimension();
+                if (headerHasTranslation() && previous != newDimen) {
+                    updateTranslation(previous - newDimen);
+                }
+            }
+        });
     }
 
     private void checkElevation() {
@@ -294,21 +381,6 @@ final class StickyHeaderPositioner {
         return false;
     }
 
-    void reset(int orientation, int firstVisiblePosition) {
-        this.orientation = orientation;
-        // Don't reset/detach if same header position is to be attached
-        if (getHeaderPositionToShow(firstVisiblePosition, null) == lastBoundPosition) {
-            return;
-        }
-        if (fallbackReset) {
-            lastBoundPosition = INVALID_POSITION;
-        }
-    }
-
-    void clearHeader() {
-        detachHeader(lastBoundPosition);
-    }
-
     private boolean recyclerViewHasPadding() {
         return recyclerView.getPaddingLeft() > 0
                 || recyclerView.getPaddingRight() > 0
@@ -357,17 +429,6 @@ final class StickyHeaderPositioner {
         return lastBoundPosition;
     }
 
-    void setElevateHeaders(int dpElevation) {
-        if (dpElevation != NO_ELEVATION) {
-            // Context may not be available at this point, so caching the dp value to be converted
-            // into pixels after first header is attached.
-            cachedElevation = dpElevation;
-        } else {
-            headerElevation = NO_ELEVATION;
-            cachedElevation = NO_ELEVATION;
-        }
-    }
-
     private void resolveElevationSettings(Context context) {
         if (cachedElevation != NO_ELEVATION && headerElevation == NO_ELEVATION) {
             headerElevation = pxFromDp(context, cachedElevation);
@@ -377,9 +438,5 @@ final class StickyHeaderPositioner {
     private float pxFromDp(Context context, int dp) {
         float scale = context.getResources().getDisplayMetrics().density;
         return dp * scale;
-    }
-
-    void setListener(@Nullable StickyHeaderListener listener) {
-        this.listener = listener;
     }
 }
