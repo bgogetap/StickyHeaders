@@ -282,6 +282,7 @@ final class StickyHeaderPositioner {
      */
     private void checkTranslation() {
         final View view = currentHeader;
+        if (view == null) return;
         view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             int previous = currentDimension();
 
@@ -396,7 +397,8 @@ final class StickyHeaderPositioner {
 
     private void waitForLayoutAndRetry(final Map<Integer, View> visibleHeaders) {
         final View view = currentHeader;
-        currentHeader.getViewTreeObserver().addOnGlobalLayoutListener(
+        if (view == null) return;
+        view.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override public void onGlobalLayout() {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
