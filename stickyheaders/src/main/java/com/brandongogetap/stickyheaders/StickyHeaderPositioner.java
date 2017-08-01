@@ -281,16 +281,19 @@ final class StickyHeaderPositioner {
      * applied, this could cause a flickering if the view's height has increased.
      */
     private void checkTranslation() {
-        currentHeader.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        final View view = currentHeader;
+        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             int previous = currentDimension();
 
             @Override public void onGlobalLayout() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    currentHeader.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 } else {
                     //noinspection deprecation
-                    currentHeader.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 }
+                if (currentHeader == null) return;
+
                 int newDimen = currentDimension();
                 if (headerHasTranslation() && previous != newDimen) {
                     updateTranslation(previous - newDimen);
@@ -392,18 +395,18 @@ final class StickyHeaderPositioner {
     }
 
     private void waitForLayoutAndRetry(final Map<Integer, View> visibleHeaders) {
+        final View view = currentHeader;
         currentHeader.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override public void onGlobalLayout() {
-                        // If header was removed during layout
-                        if (currentHeader == null) return;
-
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                            currentHeader.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                         } else {
                             //noinspection deprecation
-                            currentHeader.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                            view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                         }
+                        // If header was removed during layout
+                        if (currentHeader == null) return;
                         getRecyclerParent().requestLayout();
                         checkHeaderPositions(visibleHeaders);
                     }
