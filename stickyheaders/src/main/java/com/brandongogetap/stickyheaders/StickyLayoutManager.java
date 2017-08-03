@@ -134,7 +134,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
     }
 
     private void runPositionerInit() {
-        positioner.reset(getOrientation(), findFirstVisibleItemPosition());
+        positioner.reset(getOrientation());
         positioner.updateHeaderState(findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever);
     }
 

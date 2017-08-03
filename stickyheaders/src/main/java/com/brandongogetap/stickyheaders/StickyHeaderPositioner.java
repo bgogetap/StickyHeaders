@@ -26,7 +26,6 @@ final class StickyHeaderPositioner {
 
     private final RecyclerView recyclerView;
     private final boolean checkMargins;
-    private final boolean fallbackReset;
 
     private View currentHeader;
     private int lastBoundPosition = INVALID_POSITION;
@@ -35,24 +34,12 @@ final class StickyHeaderPositioner {
     private boolean dirty;
     private float headerElevation = NO_ELEVATION;
     private int cachedElevation = NO_ELEVATION;
-    private boolean updateCurrentHeader;
     private RecyclerView.ViewHolder currentViewHolder;
     @Nullable private StickyHeaderListener listener;
 
     StickyHeaderPositioner(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
         checkMargins = recyclerViewHasPadding();
-        if (recyclerView.getAdapter() != null) {
-            fallbackReset = false;
-            recyclerView.getAdapter().registerAdapterDataObserver(
-                    new RecyclerView.AdapterDataObserver() {
-                        @Override public void onChanged() {
-                            updateCurrentHeader = true;
-                        }
-                    });
-        } else {
-            fallbackReset = true;
-        }
     }
 
     void setHeaderPositions(List<Integer> headerPositions) {
@@ -64,7 +51,7 @@ final class StickyHeaderPositioner {
         int headerPositionToShow = getHeaderPositionToShow(
                 firstVisiblePosition, visibleHeaders.get(firstVisiblePosition));
         View headerToCopy = visibleHeaders.get(headerPositionToShow);
-        if (headerPositionToShow != lastBoundPosition || updateCurrentHeader) {
+        if (headerPositionToShow != lastBoundPosition) {
             if (headerPositionToShow == INVALID_POSITION ||
                     checkMargins && headerAwayFromEdge(headerToCopy)) { // We don't want to attach yet if header view is not at edge
                 dirty = true;
@@ -128,15 +115,9 @@ final class StickyHeaderPositioner {
         }
     }
 
-    void reset(int orientation, int firstVisiblePosition) {
+    void reset(int orientation) {
         this.orientation = orientation;
-        // Don't reset/detach if same header position is to be attached
-        if (getHeaderPositionToShow(firstVisiblePosition, null) == lastBoundPosition) {
-            return;
-        }
-        if (fallbackReset) {
-            lastBoundPosition = INVALID_POSITION;
-        }
+        lastBoundPosition = INVALID_POSITION;
     }
 
     void clearHeader() {
@@ -223,7 +204,6 @@ final class StickyHeaderPositioner {
             recyclerView.getAdapter().onBindViewHolder(currentViewHolder, headerPosition);
             checkTranslation();
             callAttach(headerPosition);
-            updateCurrentHeader = false;
             return;
         }
         detachHeader(lastBoundPosition);

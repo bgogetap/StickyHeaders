@@ -42,7 +42,7 @@ final class StickyHeaderPositionerRobot {
         when(parent.getViewTreeObserver()).thenReturn(mock(ViewTreeObserver.class));
         positioner = new StickyHeaderPositioner(recyclerView);
         positioner.setHeaderPositions(new ArrayList<Integer>());
-        positioner.reset(LinearLayoutManager.VERTICAL, 0);
+        positioner.reset(LinearLayoutManager.VERTICAL);
         positioner.setListener(listener);
 
         currentHeader = mock(View.class);
@@ -69,11 +69,6 @@ final class StickyHeaderPositionerRobot {
         when(currentHeader.getHeight()).thenReturn(200);
         when(viewRetriever.getViewHolderForPosition(anyInt())).thenReturn(viewHolder);
         positioner.updateHeaderState(firstVisiblePosition, Collections.<Integer, View>emptyMap(), viewRetriever);
-        return this;
-    }
-
-    StickyHeaderPositionerRobot reset(int firstVisiblePosition) {
-        positioner.reset(LinearLayoutManager.VERTICAL, firstVisiblePosition);
         return this;
     }
 
