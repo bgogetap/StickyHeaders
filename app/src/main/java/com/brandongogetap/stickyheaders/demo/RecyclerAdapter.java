@@ -1,6 +1,7 @@
 package com.brandongogetap.stickyheaders.demo;
 
 import android.graphics.Color;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import com.brandongogetap.stickyheaders.exposed.StickyHeader;
 import com.brandongogetap.stickyheaders.exposed.StickyHeaderHandler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static android.support.v7.widget.RecyclerView.NO_POSITION;
@@ -17,10 +19,13 @@ import static android.view.LayoutInflater.from;
 final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.BaseViewHolder>
         implements StickyHeaderHandler {
 
-    private final List<Item> data;
+    private final List<Item> data = new ArrayList<>();
 
-    RecyclerAdapter(List<Item> data) {
-        this.data = data;
+    void setData(List<Item> items) {
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new SimpleDiffCallback(data, items));
+        data.clear();
+        data.addAll(items);
+        diffResult.dispatchUpdatesTo(this);
     }
 
     @Override
@@ -40,8 +45,9 @@ final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.BaseVie
                 // based on its backing model, rather than position in the data set.
                 int position = viewHolder.getAdapterPosition();
                 if (position != NO_POSITION) {
-                    data.remove(position);
-                    notifyDataSetChanged();
+                    List<Item> newData = new ArrayList<>(data);
+                    newData.remove(position);
+                    setData(newData);
                 }
             }
         });
@@ -52,7 +58,7 @@ final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.BaseVie
         Item item = data.get(position);
         holder.titleTextView.setText(item.title);
         holder.messageTextView.setText(item.message);
-        if (position != 0 && position % 16 == 0) {
+        if (position != 0 && position % 12 == 0) {
             holder.itemView.setPadding(0, 100, 0, 100);
         } else {
             holder.itemView.setPadding(0, 0, 0, 0);
@@ -65,7 +71,7 @@ final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.BaseVie
     }
 
     @Override public int getItemCount() {
-        return data != null ? data.size() : 0;
+        return data.size();
     }
 
     @Override public int getItemViewType(int position) {

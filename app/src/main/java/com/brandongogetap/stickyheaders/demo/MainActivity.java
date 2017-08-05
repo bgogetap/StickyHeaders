@@ -9,10 +9,11 @@ import android.view.View;
 import com.brandongogetap.stickyheaders.StickyLayoutManager;
 import com.brandongogetap.stickyheaders.exposed.StickyHeaderListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    private RecyclerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,8 +22,8 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
-        List<Item> items = compileItems();
-        RecyclerAdapter adapter = new RecyclerAdapter(items);
+        adapter = new RecyclerAdapter();
+        adapter.setData(ItemGenerator.demoList());
         StickyLayoutManager layoutManager = new TopSnappedStickyLayoutManager(this, adapter);
         layoutManager.elevateHeaders(true); // Default elevation of 5dp
         // You can also specify a specific dp for elevation
@@ -42,15 +43,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private List<Item> compileItems() {
-        List<Item> items = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            if (i == 2 || (i % 4 == 0 && i > 0)) {
-                items.add(new HeaderItem("Header at " + i, ""));
-            } else {
-                items.add(new Item("Item at " + i, "Item description at " + i));
-            }
+    void setItems(List<Item> items) {
+        if (adapter != null) {
+            adapter.setData(items);
         }
-        return items;
     }
 }

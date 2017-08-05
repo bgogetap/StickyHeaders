@@ -58,10 +58,10 @@ final class StickyHeaderPositioner {
                 safeDetachHeader();
                 lastBoundPosition = INVALID_POSITION;
             } else {
+                lastBoundPosition = headerPositionToShow;
                 RecyclerView.ViewHolder viewHolder =
                         viewRetriever.getViewHolderForPosition(headerPositionToShow);
                 attachHeader(viewHolder, headerPositionToShow);
-                lastBoundPosition = headerPositionToShow;
             }
         } else if (checkMargins) {
             /*
@@ -118,6 +118,8 @@ final class StickyHeaderPositioner {
     void reset(int orientation) {
         this.orientation = orientation;
         lastBoundPosition = INVALID_POSITION;
+        dirty = true;
+        safeDetachHeader();
     }
 
     void clearHeader() {
@@ -204,6 +206,7 @@ final class StickyHeaderPositioner {
             recyclerView.getAdapter().onBindViewHolder(currentViewHolder, headerPosition);
             checkTranslation();
             callAttach(headerPosition);
+            dirty = false;
             return;
         }
         detachHeader(lastBoundPosition);
