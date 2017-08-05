@@ -204,6 +204,7 @@ final class StickyHeaderPositioner {
             callDetach(lastBoundPosition);
             //noinspection unchecked
             recyclerView.getAdapter().onBindViewHolder(currentViewHolder, headerPosition);
+            currentViewHolder.itemView.requestLayout();
             checkTranslation();
             callAttach(headerPosition);
             dirty = false;
