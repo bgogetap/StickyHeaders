@@ -1,5 +1,12 @@
 Change Log
 ==========
+Version 0.4.9 *(2017-8-5)*
+----------------------------
+- Fix issues with headers not being cleared if removed from the data set.
+- Add several UI tests to prevent future regressions.
+
+**It is strongly recommended that users on previous versions, especially 0.4.5 - 0.4.8, upgrade to this version.** 
+
 Version 0.4.4 *(2017-4-26)*
 ----------------------------
 - Fix issue where a previously stickied header is not detached after adapter updated with a sticky header at position 0 which also happens to be the first visible position.
