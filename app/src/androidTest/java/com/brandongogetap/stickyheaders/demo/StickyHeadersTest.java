@@ -96,4 +96,20 @@ public class StickyHeadersTest {
                 .setVisibility(View.VISIBLE)
                 .verifyHeaderVisibility(ViewMatchers.Visibility.VISIBLE);
     }
+
+    @Test
+    public void firstItemNotStickiedWhenAtTop() throws Throwable {
+        robot.updateData(largeListWithHeadersAt(0, 3, 5))
+                .updatePadding(0)
+                .verifyHeaderDoesNotExist()
+                .scrollTo(2)
+                .verifyHeaderExists("0")
+                .scrollTo(0)
+                .verifyHeaderDoesNotExist()
+                .rotate()
+                .updatePadding(0)
+                .verifyHeaderDoesNotExist()
+                // Prevents flaky tests by getting orientation back to Portrait
+                .rotate();
+    }
 }

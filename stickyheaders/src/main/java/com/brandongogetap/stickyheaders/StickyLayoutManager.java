@@ -93,7 +93,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
         if (Math.abs(scroll) > 0) {
             if (positioner != null) {
                 positioner.updateHeaderState(
-                        findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever);
+                        findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever, findFirstCompletelyVisibleItemPosition() == 0);
             }
         }
         return scroll;
@@ -105,7 +105,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
         if (Math.abs(scroll) > 0) {
             if (positioner != null) {
                 positioner.updateHeaderState(
-                        findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever);
+                        findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever, findFirstCompletelyVisibleItemPosition() == 0);
             }
         }
         return scroll;
@@ -135,7 +135,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
 
     private void runPositionerInit() {
         positioner.reset(getOrientation());
-        positioner.updateHeaderState(findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever);
+        positioner.updateHeaderState(findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever, findFirstCompletelyVisibleItemPosition() == 0);
     }
 
     private Map<Integer, View> getVisibleHeaders() {

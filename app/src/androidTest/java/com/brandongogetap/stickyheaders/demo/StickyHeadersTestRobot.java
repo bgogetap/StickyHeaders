@@ -67,6 +67,11 @@ final class StickyHeadersTestRobot {
         return this;
     }
 
+    StickyHeadersTestRobot updatePadding(int padding) throws Throwable {
+        activityRule.runOnUiThread(() -> mainActivity().recyclerView.setPadding(padding, padding, padding, padding));
+        return this;
+    }
+
     private MainActivity mainActivity() {
         return activityRule.getActivity();
     }

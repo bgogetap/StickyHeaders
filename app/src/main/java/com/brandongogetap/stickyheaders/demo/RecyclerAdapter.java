@@ -37,18 +37,16 @@ final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.BaseVie
         } else {
             viewHolder = new MyOtherViewHolder(view);
         }
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                // This is unsafe to do in OnClickListeners attached to sticky headers. The adapter
-                // position of the holder will be out of sync if any items have been added/removed.
-                // If a click listener needs to be set on a sticky header, it is recommended to identify the header
-                // based on its backing model, rather than position in the data set.
-                int position = viewHolder.getAdapterPosition();
-                if (position != NO_POSITION) {
-                    List<Item> newData = new ArrayList<>(data);
-                    newData.remove(position);
-                    setData(newData);
-                }
+        view.setOnClickListener(v -> {
+            // This is unsafe to do in OnClickListeners attached to sticky headers. The adapter
+            // position of the holder will be out of sync if any items have been added/removed.
+            // If a click listener needs to be set on a sticky header, it is recommended to identify the header
+            // based on its backing model, rather than position in the data set.
+            int position = viewHolder.getAdapterPosition();
+            if (position != NO_POSITION) {
+                List<Item> newData = new ArrayList<>(data);
+                newData.remove(position);
+                setData(newData);
             }
         });
         return viewHolder;

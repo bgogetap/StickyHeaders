@@ -56,8 +56,8 @@ final class StickyHeaderPositioner {
     }
 
     void updateHeaderState(int firstVisiblePosition, Map<Integer, View> visibleHeaders,
-            ViewRetriever viewRetriever) {
-        int headerPositionToShow = getHeaderPositionToShow(
+            ViewRetriever viewRetriever, boolean atTop) {
+        int headerPositionToShow = atTop ? INVALID_POSITION : getHeaderPositionToShow(
                 firstVisiblePosition, visibleHeaders.get(firstVisiblePosition));
         View headerToCopy = visibleHeaders.get(headerPositionToShow);
         if (headerPositionToShow != lastBoundPosition) {
