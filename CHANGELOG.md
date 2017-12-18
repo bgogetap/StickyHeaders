@@ -1,5 +1,10 @@
 Change Log
 ==========
+Version 0.5.0 *(2017-12-18)*
+----------------------------
+- Header visibility now follows changes to the RecyclerView visibility
+- If first item is a sticky header, it will not be stickied if the RecyclerView is scrolled to the top. This fixes an issue where the header would cover the edge effect if the RecyclerView had no top padding.
+
 Version 0.4.9 *(2017-8-5)*
 ----------------------------
 - Fix issues with headers not being cleared if removed from the data set.

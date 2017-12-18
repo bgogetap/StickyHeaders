@@ -39,6 +39,7 @@ final class StickyHeaderPositionerRobot {
         ViewGroup parent = mock(ViewGroup.class);
         when(recyclerView.getParent()).thenReturn(parent);
         when(recyclerView.getAdapter()).thenReturn(mock(RecyclerView.Adapter.class));
+        when(recyclerView.getViewTreeObserver()).thenReturn(mock(ViewTreeObserver.class));
         when(parent.getViewTreeObserver()).thenReturn(mock(ViewTreeObserver.class));
         positioner = new StickyHeaderPositioner(recyclerView);
         positioner.setHeaderPositions(new ArrayList<Integer>());
@@ -68,7 +69,7 @@ final class StickyHeaderPositionerRobot {
         ViewRetriever viewRetriever = mock(ViewRetriever.class);
         when(currentHeader.getHeight()).thenReturn(200);
         when(viewRetriever.getViewHolderForPosition(anyInt())).thenReturn(viewHolder);
-        positioner.updateHeaderState(firstVisiblePosition, Collections.<Integer, View>emptyMap(), viewRetriever);
+        positioner.updateHeaderState(firstVisiblePosition, Collections.<Integer, View>emptyMap(), viewRetriever, false);
         return this;
     }
 
