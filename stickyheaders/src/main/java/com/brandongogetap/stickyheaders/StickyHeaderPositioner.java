@@ -39,6 +39,15 @@ final class StickyHeaderPositioner {
 
     StickyHeaderPositioner(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
+        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                int visibility = StickyHeaderPositioner.this.recyclerView.getVisibility();
+                if (currentHeader != null) {
+                    currentHeader.setVisibility(visibility);
+                }
+            }
+        });
         checkMargins = recyclerViewHasPadding();
     }
 

@@ -1,7 +1,9 @@
 package com.brandongogetap.stickyheaders.demo;
 
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.view.View;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,7 +51,7 @@ public class StickyHeadersTest {
     public void headerRemovedWhenDataCleared() throws Throwable {
         robot.updateData(largeListWithHeadersAt(2, 5, 8, 10))
                 .scrollTo(5)
-                .updateData(Collections.<Item>emptyList())
+                .updateData(Collections.emptyList())
                 .verifyHeaderDoesNotExist();
     }
 
@@ -83,5 +85,15 @@ public class StickyHeadersTest {
                 .scrollTo(5)
                 .updateData(twoWithHeader())
                 .verifyHeaderDoesNotExist();
+    }
+
+    @Test
+    public void headerVisibilityFollowsRecyclerView() throws Throwable {
+        robot.updateData(largeListWithHeadersAt(2, 5, 8))
+                .scrollTo(3)
+                .setVisibility(View.GONE)
+                .verifyHeaderVisibility(ViewMatchers.Visibility.GONE)
+                .setVisibility(View.VISIBLE)
+                .verifyHeaderVisibility(ViewMatchers.Visibility.VISIBLE);
     }
 }

@@ -13,6 +13,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    RecyclerView recyclerView;
+
     private RecyclerAdapter adapter;
 
     @Override
@@ -20,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView = findViewById(R.id.recycler_view);
 
         adapter = new RecyclerAdapter();
         adapter.setData(ItemGenerator.demoList());
@@ -41,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("Listener", "Detached with position: " + adapterPosition);
             }
         });
+        findViewById(R.id.visibility_button).setOnClickListener(v ->
+                recyclerView.setVisibility(recyclerView.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE));
     }
 
     void setItems(List<Item> items) {

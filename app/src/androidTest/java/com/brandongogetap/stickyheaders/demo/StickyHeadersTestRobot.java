@@ -16,6 +16,7 @@ import static android.support.test.espresso.assertion.ViewAssertions.doesNotExis
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
@@ -47,16 +48,22 @@ final class StickyHeadersTestRobot {
     }
 
     StickyHeadersTestRobot updateData(final List<Item> data) throws Throwable {
-        activityRule.runOnUiThread(new Runnable() {
-            @Override public void run() {
-                mainActivity().setItems(data);
-            }
-        });
+        activityRule.runOnUiThread(() -> mainActivity().setItems(data));
         return this;
     }
 
     StickyHeadersTestRobot rotate() {
         rotateScreen();
+        return this;
+    }
+
+    StickyHeadersTestRobot setVisibility(int visibility) throws Throwable {
+        activityRule.runOnUiThread(() -> mainActivity().recyclerView.setVisibility(visibility));
+        return this;
+    }
+
+    StickyHeadersTestRobot verifyHeaderVisibility(ViewMatchers.Visibility visibility) {
+        onView(withId(R.id.header_view)).check(matches(withEffectiveVisibility(visibility)));
         return this;
     }
 
