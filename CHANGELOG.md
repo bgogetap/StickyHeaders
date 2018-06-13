@@ -1,5 +1,9 @@
 Change Log
 ==========
+Version 0.5.1 *(2018-06-13)*
+----------------------------
+- Fix AAPT2 build issue (thanks @armansimonyan13!)
+
 Version 0.5.0 *(2017-12-18)*
 ----------------------------
 - Header visibility now follows changes to the RecyclerView visibility
