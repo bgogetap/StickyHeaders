@@ -6,7 +6,7 @@ android:
 
     - build-tools-27.0.3
 
-    - android-26
+    - android-28
 
     - extra-google-m2repository
     - extra-android-m2repository
