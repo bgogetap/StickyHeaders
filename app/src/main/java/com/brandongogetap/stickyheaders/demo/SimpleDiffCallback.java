@@ -1,6 +1,6 @@
 package com.brandongogetap.stickyheaders.demo;
 
-import android.support.v7.util.DiffUtil;
+import androidx.recyclerview.widget.DiffUtil;
 
 import java.util.List;
 
