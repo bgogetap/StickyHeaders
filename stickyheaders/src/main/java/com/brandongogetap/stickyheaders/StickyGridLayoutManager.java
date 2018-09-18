@@ -1,25 +1,21 @@
 package com.brandongogetap.stickyheaders;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.brandongogetap.stickyheaders.exposed.StickyHeaderHandler;
 import com.brandongogetap.stickyheaders.exposed.StickyHeaderListener;
 
-public class StickyLayoutManager extends LinearLayoutManager {
+public class StickyGridLayoutManager extends GridLayoutManager {
 
     private LayoutManagerHelper layoutManagerHelper;
 
-    public StickyLayoutManager(Context context, StickyHeaderHandler headerHandler) {
-        this(context, VERTICAL, false, headerHandler);
-        init(headerHandler);
-    }
-
-    public StickyLayoutManager(Context context, int orientation, boolean reverseLayout, StickyHeaderHandler headerHandler) {
-        super(context, orientation, reverseLayout);
+    public StickyGridLayoutManager(@NonNull final Context context, final int span, @NonNull final StickyHeaderHandler headerHandler) {
+        super(context, span);
         init(headerHandler);
     }
 
@@ -41,12 +37,12 @@ public class StickyLayoutManager extends LinearLayoutManager {
      * Enable or disable elevation for Sticky Headers.
      * <p>
      * If you want to specify a specific amount of elevation, use
-     * {@link StickyLayoutManager#elevateHeaders(int)}
+     * {@link StickyGridLayoutManager#elevateHeaders(int)}
      *
      * @param elevateHeaders Enable Sticky Header elevation. Default is false.
      */
     public void elevateHeaders(boolean elevateHeaders) {
-       layoutManagerHelper.elevateHeaders(elevateHeaders);
+        layoutManagerHelper.elevateHeaders(elevateHeaders);
     }
 
     /**
