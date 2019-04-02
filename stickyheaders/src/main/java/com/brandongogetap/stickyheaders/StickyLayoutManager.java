@@ -170,4 +170,13 @@ public class StickyLayoutManager extends LinearLayoutManager {
             positioner.setHeaderPositions(headerPositions);
         }
     }
+
+    /**
+     * We override this method in order to prevent a crash.
+     * https://stackoverflow.com/questions/30220771/recyclerview-inconsistency-detected-invalid-item-position?page=1&tab=votes#tab-top
+     */
+    @Override
+    public boolean supportsPredictiveItemAnimations() {
+        return false;
+    }
 }
