@@ -133,6 +133,14 @@ public class StickyLayoutManager extends LinearLayoutManager {
         super.onAttachedToWindow(view);
     }
 
+    @Override
+    public void onDetachedFromWindow(RecyclerView view, RecyclerView.Recycler recycler) {
+        if (positioner != null) {
+            positioner.clearVisibilityObserver();
+        }
+        super.onDetachedFromWindow(view, recycler);
+    }
+
     private void runPositionerInit() {
         positioner.reset(getOrientation());
         positioner.updateHeaderState(findFirstVisibleItemPosition(), getVisibleHeaders(), viewRetriever, findFirstCompletelyVisibleItemPosition() == 0);

@@ -36,18 +36,18 @@ final class StickyHeaderPositioner {
     private int cachedElevation = NO_ELEVATION;
     private RecyclerView.ViewHolder currentViewHolder;
     @Nullable private StickyHeaderListener listener;
+    private final ViewTreeObserver.OnGlobalLayoutListener visibilityObserver = new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            int visibility = StickyHeaderPositioner.this.recyclerView.getVisibility();
+            if (currentHeader != null) {
+                currentHeader.setVisibility(visibility);
+            }
+        }
+    };
 
     StickyHeaderPositioner(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
-        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                int visibility = StickyHeaderPositioner.this.recyclerView.getVisibility();
-                if (currentHeader != null) {
-                    currentHeader.setVisibility(visibility);
-                }
-            }
-        });
         checkMargins = recyclerViewHasPadding();
     }
 
@@ -133,6 +133,15 @@ final class StickyHeaderPositioner {
 
     void clearHeader() {
         detachHeader(lastBoundPosition);
+    }
+
+    void clearVisibilityObserver() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(visibilityObserver);
+        } else {
+            //noinspection deprecation
+            recyclerView.getViewTreeObserver().removeGlobalOnLayoutListener(visibilityObserver);
+        }
     }
 
     void setListener(@Nullable StickyHeaderListener listener) {
@@ -233,6 +242,7 @@ final class StickyHeaderPositioner {
         if (checkMargins) {
             updateLayoutParams(currentHeader);
         }
+        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(visibilityObserver);
         dirty = false;
     }
 
@@ -331,6 +341,7 @@ final class StickyHeaderPositioner {
         if (currentHeader != null) {
             getRecyclerParent().removeView(currentHeader);
             callDetach(position);
+            clearVisibilityObserver();
             currentHeader = null;
             currentViewHolder = null;
         }
