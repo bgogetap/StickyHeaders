@@ -26,6 +26,15 @@ final class StickyHeaderPositioner {
 
     private final RecyclerView recyclerView;
     private final boolean checkMargins;
+    private final ViewTreeObserver.OnGlobalLayoutListener visibilityObserver = new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            int visibility = StickyHeaderPositioner.this.recyclerView.getVisibility();
+            if (currentHeader != null) {
+                currentHeader.setVisibility(visibility);
+            }
+        }
+    };
 
     private View currentHeader;
     private int lastBoundPosition = INVALID_POSITION;
@@ -36,15 +45,6 @@ final class StickyHeaderPositioner {
     private int cachedElevation = NO_ELEVATION;
     private RecyclerView.ViewHolder currentViewHolder;
     @Nullable private StickyHeaderListener listener;
-    private final ViewTreeObserver.OnGlobalLayoutListener visibilityObserver = new ViewTreeObserver.OnGlobalLayoutListener() {
-        @Override
-        public void onGlobalLayout() {
-            int visibility = StickyHeaderPositioner.this.recyclerView.getVisibility();
-            if (currentHeader != null) {
-                currentHeader.setVisibility(visibility);
-            }
-        }
-    };
 
     StickyHeaderPositioner(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
@@ -238,11 +238,11 @@ final class StickyHeaderPositioner {
         // Set to Invisible until we position it in #checkHeaderPositions.
         currentHeader.setVisibility(View.INVISIBLE);
         currentHeader.setId(R.id.header_view);
+        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(visibilityObserver);
         getRecyclerParent().addView(currentHeader);
         if (checkMargins) {
             updateLayoutParams(currentHeader);
         }
-        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(visibilityObserver);
         dirty = false;
     }
 
