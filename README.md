@@ -31,7 +31,6 @@ The adapter position passed in `headerAttached` will always be correct at that m
 
 Add to your Gradle dependencies (Check badge at top for latest version):
 
-*Note: Adding `-androidx` to the version will use AndroidX versions of classes (i.e. RecyclerView)*
 
 ```groovy
 buildscript {
