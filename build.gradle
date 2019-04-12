@@ -6,7 +6,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0-beta05'
+        classpath 'com.android.tools.build:gradle:3.3.2'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -27,7 +27,11 @@ task clean(type: Delete) {
 ext {
     minSdkVersion = 15
     compileSdkVersion = 28
-    buildToolsVersion = '27.0.3'
+    buildToolsVersion = '28.0.3'
     mockitoVersion = '1.10.19'
-    supportLibraryVersion = '1.0.0-rc01'
+    appCompatVersion = '1.0.2'
+    materialVersion = '1.0.0'
+    recyclerViewVersion = '1.0.0'
+    espressoVersion = '3.1.1'
+    testRunnerVersion = '1.1.1'
 }

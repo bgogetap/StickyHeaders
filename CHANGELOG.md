@@ -1,5 +1,10 @@
 Change Log
 ==========
+Version 0.6.0 *(2019-04-11)*
+----------------------------
+- AndroidX is now in master -- no need to specify `-androidx` in the version
+- Fixed #72 (potential memory leak). Thanks @nkontizas!
+
 Version 0.5.1 *(2018-06-13)*
 ----------------------------
 - Fix AAPT2 build issue (thanks @armansimonyan13!)
