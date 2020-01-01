@@ -2,6 +2,10 @@ Change Log
 ==========
 Version 0.6.0 *(2019-04-11)*
 ----------------------------
+- Add `StickyLayoutManager#disableParentViewRestrictions` to turn off the runtime check for valid parent views of the `RecyclerView`
+
+Version 0.6.0 *(2019-04-11)*
+----------------------------
 - AndroidX is now in master -- no need to specify `-androidx` in the version
 - Fixed #72 (potential memory leak). Thanks @nkontizas!
 
