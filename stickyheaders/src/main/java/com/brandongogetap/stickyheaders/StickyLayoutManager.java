@@ -1,10 +1,11 @@
 package com.brandongogetap.stickyheaders;
 
 import android.content.Context;
+import android.view.View;
+
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.View;
 
 import com.brandongogetap.stickyheaders.ViewRetriever.RecyclerViewRetriever;
 import com.brandongogetap.stickyheaders.exposed.StickyHeader;
@@ -23,7 +24,15 @@ public class StickyLayoutManager extends LinearLayoutManager {
     private List<Integer> headerPositions = new ArrayList<>();
     private RecyclerViewRetriever viewRetriever;
     private int headerElevation = StickyHeaderPositioner.NO_ELEVATION;
-    @Nullable private StickyHeaderListener listener;
+    /**
+     * If {@code false}, the {@link android.view.ViewParent} of this layout manager's {@link RecyclerView}
+     * will not be validated against supported types.
+     * <p>
+     * See {@link #disableParentViewRestrictions()}
+     */
+    private boolean enforceParentViewRestrictions = true;
+    @Nullable
+    private StickyHeaderListener listener;
 
     public StickyLayoutManager(Context context, StickyHeaderHandler headerHandler) {
         this(context, VERTICAL, false, headerHandler);
@@ -78,6 +87,17 @@ public class StickyLayoutManager extends LinearLayoutManager {
         }
     }
 
+    /**
+     * Used to override the default behavior of validating supported
+     * {@link android.view.ViewParent}s of the {@link RecyclerView}.
+     * <p>
+     * This is opt-in because of broken behavior that may occur when, for example, the RecyclerView
+     * parent is a LinearLayout.
+     */
+    public void disableParentViewRestrictions() {
+        this.enforceParentViewRestrictions = false;
+    }
+
     @Override
     public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
         super.onLayoutChildren(recycler, state);
@@ -111,7 +131,8 @@ public class StickyLayoutManager extends LinearLayoutManager {
         return scroll;
     }
 
-    @Override public void removeAndRecycleAllViews(RecyclerView.Recycler recycler) {
+    @Override
+    public void removeAndRecycleAllViews(RecyclerView.Recycler recycler) {
         super.removeAndRecycleAllViews(recycler);
         if (positioner != null) {
             positioner.clearHeader();
@@ -120,7 +141,9 @@ public class StickyLayoutManager extends LinearLayoutManager {
 
     @Override
     public void onAttachedToWindow(RecyclerView view) {
-        Preconditions.validateParentView(view);
+        if (enforceParentViewRestrictions) {
+            Preconditions.validateParentView(view);
+        }
         viewRetriever = new RecyclerViewRetriever(view);
         positioner = new StickyHeaderPositioner(view);
         positioner.setElevateHeaders(headerElevation);
