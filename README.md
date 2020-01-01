@@ -6,7 +6,7 @@ Easily add Sticky Headers to your RecyclerView
 ### Setup
 Implement `StickyHeaderHandler` in your Presenter/Adapter/Activity or whatever class has access to your RecyclerView adapter dataset
 
-Make sure the parent of the RecyclerView is a FrameLayout or CoordinatorLayout (this will be verified at Runtime)
+Make sure the parent of the RecyclerView is a FrameLayout or CoordinatorLayout (this will be verified at runtime). To avoid this runtime check, you can call `StickyLayoutManager#disableParentViewRestrictions`. This *will* cause bugs with some `ViewParent`s, such as `LinearLayout`, so use with caution.
 
 Instantiate a `StickyLayoutManager` and set that as the LayoutManager for your RecyclerView.
 
