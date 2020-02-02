@@ -1,16 +1,16 @@
 package com.brandongogetap.stickyheaders;
 
-import android.content.Context;
 import android.os.Build;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.view.ViewTreeObserver;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewGroup.MarginLayoutParams;
-import android.view.ViewTreeObserver;
 
 import com.brandongogetap.stickyheaders.exposed.StickyHeaderListener;
 
@@ -19,8 +19,7 @@ import java.util.Map;
 
 final class StickyHeaderPositioner {
 
-    static final int NO_ELEVATION = -1;
-    static final int DEFAULT_ELEVATION = 5;
+    static final float NO_ELEVATION = -1f;
 
     private static final int INVALID_POSITION = -1;
 
@@ -42,7 +41,6 @@ final class StickyHeaderPositioner {
     private int orientation;
     private boolean dirty;
     private float headerElevation = NO_ELEVATION;
-    private int cachedElevation = NO_ELEVATION;
     private RecyclerView.ViewHolder currentViewHolder;
     @Nullable private StickyHeaderListener listener;
 
@@ -56,7 +54,7 @@ final class StickyHeaderPositioner {
     }
 
     void updateHeaderState(int firstVisiblePosition, Map<Integer, View> visibleHeaders,
-            ViewRetriever viewRetriever, boolean atTop) {
+                           ViewRetriever viewRetriever, boolean atTop) {
         int headerPositionToShow = atTop ? INVALID_POSITION : getHeaderPositionToShow(
                 firstVisiblePosition, visibleHeaders.get(firstVisiblePosition));
         View headerToCopy = visibleHeaders.get(headerPositionToShow);
@@ -113,15 +111,8 @@ final class StickyHeaderPositioner {
         currentHeader.setVisibility(View.VISIBLE);
     }
 
-    void setElevateHeaders(int dpElevation) {
-        if (dpElevation != NO_ELEVATION) {
-            // Context may not be available at this point, so caching the dp value to be converted
-            // into pixels after first header is attached.
-            cachedElevation = dpElevation;
-        } else {
-            headerElevation = NO_ELEVATION;
-            cachedElevation = NO_ELEVATION;
-        }
+    void setHeaderElevation(@Px float elevation) {
+        headerElevation = elevation == 0f ? NO_ELEVATION : elevation;
     }
 
     void reset(int orientation) {
@@ -234,7 +225,6 @@ final class StickyHeaderPositioner {
         recyclerView.getAdapter().onBindViewHolder(currentViewHolder, headerPosition);
         this.currentHeader = currentViewHolder.itemView;
         callAttach(headerPosition);
-        resolveElevationSettings(currentHeader.getContext());
         // Set to Invisible until we position it in #checkHeaderPositions.
         currentHeader.setVisibility(View.INVISIBLE);
         currentHeader.setId(R.id.header_view);
@@ -436,16 +426,5 @@ final class StickyHeaderPositioner {
 
     @VisibleForTesting int getLastBoundPosition() {
         return lastBoundPosition;
-    }
-
-    private void resolveElevationSettings(Context context) {
-        if (cachedElevation != NO_ELEVATION && headerElevation == NO_ELEVATION) {
-            headerElevation = pxFromDp(context, cachedElevation);
-        }
-    }
-
-    private float pxFromDp(Context context, int dp) {
-        float scale = context.getResources().getDisplayMetrics().density;
-        return dp * scale;
     }
 }

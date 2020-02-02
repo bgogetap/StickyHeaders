@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,7 +24,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
     private StickyHeaderHandler headerHandler;
     private List<Integer> headerPositions = new ArrayList<>();
     private RecyclerViewRetriever viewRetriever;
-    private int headerElevation = StickyHeaderPositioner.NO_ELEVATION;
+    private float headerElevation = StickyHeaderPositioner.NO_ELEVATION;
     /**
      * If {@code false}, the {@link android.view.ViewParent} of this layout manager's {@link RecyclerView}
      * will not be validated against supported types.
@@ -62,28 +63,14 @@ public class StickyLayoutManager extends LinearLayoutManager {
     }
 
     /**
-     * Enable or disable elevation for Sticky Headers.
-     * <p>
-     * If you want to specify a specific amount of elevation, use
-     * {@link StickyLayoutManager#elevateHeaders(int)}
+     * Sets the elevation of the sticky header view, in pixels.
      *
-     * @param elevateHeaders Enable Sticky Header elevation. Default is false.
+     * @param elevation elevation in pixels.
      */
-    public void elevateHeaders(boolean elevateHeaders) {
-        this.headerElevation = elevateHeaders ?
-                StickyHeaderPositioner.DEFAULT_ELEVATION : StickyHeaderPositioner.NO_ELEVATION;
-        elevateHeaders(headerElevation);
-    }
-
-    /**
-     * Enable Sticky Header elevation with a specific amount.
-     *
-     * @param dp elevation in dp
-     */
-    public void elevateHeaders(int dp) {
-        this.headerElevation = dp;
+    public void setHeaderElevation(@Px float elevation) {
+        this.headerElevation = elevation;
         if (positioner != null) {
-            positioner.setElevateHeaders(dp);
+            positioner.setHeaderElevation(elevation);
         }
     }
 
@@ -146,7 +133,7 @@ public class StickyLayoutManager extends LinearLayoutManager {
         }
         viewRetriever = new RecyclerViewRetriever(view);
         positioner = new StickyHeaderPositioner(view);
-        positioner.setElevateHeaders(headerElevation);
+        positioner.setHeaderElevation(headerElevation);
         positioner.setListener(listener);
         if (headerPositions.size() > 0) {
             // Layout has already happened and header positions are cached. Catch positioner up.

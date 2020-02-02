@@ -1,10 +1,11 @@
 package com.brandongogetap.stickyheaders.demo;
 
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.brandongogetap.stickyheaders.StickyLayoutManager;
 import com.brandongogetap.stickyheaders.exposed.StickyHeaderListener;
@@ -27,9 +28,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new RecyclerAdapter();
         adapter.setData(ItemGenerator.demoList());
         StickyLayoutManager layoutManager = new TopSnappedStickyLayoutManager(this, adapter);
-        layoutManager.elevateHeaders(true); // Default elevation of 5dp
-        // You can also specify a specific dp for elevation
-//        layoutManager.elevateHeaders(10);
+        layoutManager.setHeaderElevation(getResources().getDimensionPixelSize(R.dimen.elevation_sticky_header));
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         layoutManager.setStickyHeaderListener(new StickyHeaderListener() {

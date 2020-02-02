@@ -17,7 +17,7 @@ That's it! See the example app for more in depth details.
 #### Additional Features
 Add elevation to your headers (animated in and out) on Lollipop and above:
 
-`layoutManager.elevateHeaders(true)` OR `layoutManager.setElevation(int dp)`
+`layoutManager.setHeaderElevation(float px)`
 
 Add a listener to be notified when headers are attached/re-bound or detached:
 
