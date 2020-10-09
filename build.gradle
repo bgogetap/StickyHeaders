@@ -34,7 +34,7 @@ ext {
     junitVersion = "4.13"
     androidjunitVersion = "1.1.2"
     materialVersion = "1.2.1"
-    mockitoVersion = "1.10.19"
+    mockitoVersion = "2.23.0"
     recyclerViewVersion = "1.1.0"
     robolectricVersion = "4.3.1"
     testRunnerVersion = "1.3.0"
