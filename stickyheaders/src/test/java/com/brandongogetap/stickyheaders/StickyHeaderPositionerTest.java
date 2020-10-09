@@ -31,8 +31,20 @@ public final class StickyHeaderPositionerTest {
         StickyHeaderPositionerRobot.create()
                 .withHeaderPositions(asList(1, 3, 5))
                 .setupPosition(2)
-                .attachWithSameViewHolder(1, 3)
+                .setListener()
+                .attachWithSameViewHolder(1, 3, true /* checkListener */)
                 .setupPosition(4)
-                .attachWithDifferentViewHolder(3, 5);
+                .attachWithDifferentViewHolder(3, 5, true /* checkListener */);
+    }
+
+    @Test
+    public void listenerCallbackWhenListenerRegisteredAfterHeaderAttached() {
+        StickyHeaderPositionerRobot.create()
+                .withHeaderPositions(asList(1, 3, 5))
+                .setupPosition(2)
+                .attachWithSameViewHolder(1, 3, false /* checkListener */)
+                .setListener()
+                .validateListenerCalledAttach(1);
+
     }
 }

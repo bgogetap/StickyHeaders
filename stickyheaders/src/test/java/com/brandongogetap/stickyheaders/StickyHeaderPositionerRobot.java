@@ -1,10 +1,11 @@
 package com.brandongogetap.stickyheaders;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.brandongogetap.stickyheaders.exposed.StickyHeaderListener;
 
@@ -44,7 +45,6 @@ final class StickyHeaderPositionerRobot {
         positioner = new StickyHeaderPositioner(recyclerView);
         positioner.setHeaderPositions(new ArrayList<Integer>());
         positioner.reset(LinearLayoutManager.VERTICAL);
-        positioner.setListener(listener);
 
         currentHeader = mock(View.class);
         viewHolder = new RecyclerView.ViewHolder(currentHeader) {
@@ -78,15 +78,17 @@ final class StickyHeaderPositionerRobot {
         return this;
     }
 
-    StickyHeaderPositionerRobot attachWithSameViewHolder(int lastPosition, int headerPosition) {
+    StickyHeaderPositionerRobot attachWithSameViewHolder(int lastPosition, int headerPosition, boolean checkListener) {
         positioner.attachHeader(viewHolder, headerPosition);
-        InOrder inOrder = inOrder(listener);
-        inOrder.verify(listener, times(1)).headerDetached(currentHeader, lastPosition);
-        inOrder.verify(listener, times(1)).headerAttached(currentHeader, headerPosition);
+        if (checkListener) {
+            InOrder inOrder = inOrder(listener);
+            inOrder.verify(listener, times(1)).headerDetached(currentHeader, lastPosition);
+            inOrder.verify(listener, times(1)).headerAttached(currentHeader, headerPosition);
+        }
         return this;
     }
 
-    StickyHeaderPositionerRobot attachWithDifferentViewHolder(int lastPosition, int headerPosition) {
+    StickyHeaderPositionerRobot attachWithDifferentViewHolder(int lastPosition, int headerPosition, boolean checkListener) {
         View otherView = mock(View.class);
         RecyclerView.ViewHolder otherViewHolder = new RecyclerView.ViewHolder(otherView) {
             @Override
@@ -94,10 +96,12 @@ final class StickyHeaderPositionerRobot {
                 return super.toString();
             }
         };
-        InOrder inOrder = inOrder(listener);
         positioner.attachHeader(otherViewHolder, headerPosition);
-        inOrder.verify(listener, times(1)).headerDetached(currentHeader, lastPosition);
-        inOrder.verify(listener, times(1)).headerAttached(otherView, headerPosition);
+        if (checkListener) {
+            InOrder inOrder = inOrder(listener);
+            inOrder.verify(listener, times(1)).headerDetached(currentHeader, lastPosition);
+            inOrder.verify(listener, times(1)).headerAttached(otherView, headerPosition);
+        }
         return this;
     }
 
@@ -108,6 +112,16 @@ final class StickyHeaderPositionerRobot {
         when(nextHeader.getY()).thenReturn(nextHeaderTop);
         positioner.checkHeaderPositions(visibleHeaderMap);
         verify(currentHeader, atLeastOnce()).setTranslationY(expectedOffset);
+        return this;
+    }
+
+    StickyHeaderPositionerRobot setListener() {
+        positioner.setListener(listener);
+        return this;
+    }
+
+    StickyHeaderPositionerRobot validateListenerCalledAttach(int position) {
+        verify(listener).headerAttached(currentHeader, position);
         return this;
     }
 }

@@ -152,6 +152,9 @@ final class StickyHeaderPositioner {
 
     void setListener(@Nullable StickyHeaderListener listener) {
         this.listener = listener;
+        if (currentHeader != null && listener != null) {
+            listener.headerAttached(currentHeader, lastBoundPosition);
+        }
     }
 
     private float offsetHeader(View nextHeader) {
