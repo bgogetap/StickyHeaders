@@ -1,18 +1,22 @@
 
 buildscript {
+    ext.kotlin_version = '1.4.10'
     repositories {
-        jcenter()
         google()
+        mavenCentral()
+        jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'com.android.tools.build:gradle:4.0.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 allprojects {
     repositories {
-        jcenter()
         google()
+        mavenCentral()
+        jcenter()
     }
 }
 
@@ -24,12 +28,15 @@ ext {
     minSdkVersion = 15
     compileSdkVersion = 29
 
-    appCompatVersion = '1.1.0'
-    espressoVersion = '3.1.1'
+    appCompatVersion = "1.2.0"
+    constraintlayoutVersion = "2.0.2"
+    espressoVersion = "3.3.0"
     junitVersion = "4.13"
-    materialVersion = '1.0.0'
-    mockitoVersion = '1.10.19'
-    recyclerViewVersion = '1.1.0'
+    androidjunitVersion = "1.1.2"
+    materialVersion = "1.2.1"
+    mockitoVersion = "1.10.19"
+    recyclerViewVersion = "1.1.0"
     robolectricVersion = "4.3.1"
-    testRunnerVersion = '1.1.1'
+    testRunnerVersion = "1.3.0"
+    viewpagerVersion = "1.0.0"
 }

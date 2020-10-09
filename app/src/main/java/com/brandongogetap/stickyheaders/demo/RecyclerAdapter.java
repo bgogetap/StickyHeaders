@@ -16,12 +16,12 @@ import java.util.List;
 import static androidx.recyclerview.widget.RecyclerView.NO_POSITION;
 import static android.view.LayoutInflater.from;
 
-final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.BaseViewHolder>
+public final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.BaseViewHolder>
         implements StickyHeaderHandler {
 
     private final List<Item> data = new ArrayList<>();
 
-    void setData(List<Item> items) {
+    public void setData(List<Item> items) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new SimpleDiffCallback(data, items));
         data.clear();
         data.addAll(items);

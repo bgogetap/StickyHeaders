@@ -3,13 +3,13 @@ package com.brandongogetap.stickyheaders.demo;
 import java.util.ArrayList;
 import java.util.List;
 
-final class ItemGenerator {
+public final class ItemGenerator {
 
     private ItemGenerator() {
 
     }
 
-    static List<Item> largeListWithHeadersAt(int... positions) {
+    public static List<Item> largeListWithHeadersAt(int... positions) {
         List<Item> items = new ArrayList<>();
         for (int i = 0; i < 50; i++) {
             if (inArray(positions, i)) {
@@ -28,7 +28,7 @@ final class ItemGenerator {
         return items;
     }
 
-    static List<Item> demoList() {
+    public static List<Item> demoList() {
         List<Item> items = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             if (i==0 || i == 2 || (i % 4 == 0 && i > 0)) {

@@ -1,9 +1,10 @@
 package com.brandongogetap.stickyheaders.demo;
 
-import androidx.test.espresso.matcher.ViewMatchers;
-import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
 import android.view.View;
+
+import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -19,12 +20,13 @@ import static com.brandongogetap.stickyheaders.demo.ItemGenerator.twoWithHeader;
 public class StickyHeadersTest {
 
     @Rule
-    public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class);
+    public ActivityScenarioRule<MainActivity> activityRule = new ActivityScenarioRule<>(MainActivity.class);
+
     private StickyHeadersTestRobot robot;
 
     @Before
     public void setUp() {
-        robot = new StickyHeadersTestRobot(activityRule);
+        robot = new StickyHeadersTestRobot(activityRule.getScenario());
     }
 
     @Test

@@ -7,7 +7,7 @@ import com.brandongogetap.stickyheaders.exposed.StickyHeaderHandler;
 
 public final class TopSnappedStickyLayoutManager extends StickyLayoutManager {
 
-    TopSnappedStickyLayoutManager(Context context, StickyHeaderHandler headerHandler) {
+    public TopSnappedStickyLayoutManager(Context context, StickyHeaderHandler headerHandler) {
         super(context, headerHandler);
     }
 

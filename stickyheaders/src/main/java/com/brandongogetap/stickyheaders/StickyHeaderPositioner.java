@@ -2,15 +2,16 @@ package com.brandongogetap.stickyheaders;
 
 import android.content.Context;
 import android.os.Build;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.view.ViewTreeObserver;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewGroup.MarginLayoutParams;
-import android.view.ViewTreeObserver;
 
 import com.brandongogetap.stickyheaders.exposed.StickyHeaderListener;
 
@@ -49,14 +50,18 @@ final class StickyHeaderPositioner {
     StickyHeaderPositioner(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
         checkMargins = recyclerViewHasPadding();
+        maybeRemoveStaleHeader();
     }
 
     void setHeaderPositions(List<Integer> headerPositions) {
         this.headerPositions = headerPositions;
     }
 
-    void updateHeaderState(int firstVisiblePosition, Map<Integer, View> visibleHeaders,
-            ViewRetriever viewRetriever, boolean atTop) {
+    void updateHeaderState(
+            int firstVisiblePosition,
+            Map<Integer, View> visibleHeaders,
+            ViewRetriever viewRetriever,
+            boolean atTop) {
         int headerPositionToShow = atTop ? INVALID_POSITION : getHeaderPositionToShow(
                 firstVisiblePosition, visibleHeaders.get(firstVisiblePosition));
         View headerToCopy = visibleHeaders.get(headerPositionToShow);
@@ -97,6 +102,7 @@ final class StickyHeaderPositioner {
         if (currentHeader == null) return;
         // This can happen after configuration changes.
         if (currentHeader.getHeight() == 0) {
+            currentHeader.setVisibility(View.VISIBLE);
             waitForLayoutAndRetry(visibleHeaders);
             return;
         }
@@ -434,7 +440,20 @@ final class StickyHeaderPositioner {
         });
     }
 
-    @VisibleForTesting int getLastBoundPosition() {
+    /**
+     * If a header view is restored in the hierarchy, we just want to remove it to keep state in
+     * this class consistent.
+     */
+    private void maybeRemoveStaleHeader() {
+        View existingHeader = getRecyclerParent().findViewById(R.id.header_view);
+        if (existingHeader != null) {
+            getRecyclerParent().removeView(existingHeader);
+        }
+        currentHeader = null;
+    }
+
+    @VisibleForTesting
+    int getLastBoundPosition() {
         return lastBoundPosition;
     }
 
