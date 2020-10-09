@@ -1,5 +1,10 @@
 Change Log
 ==========
+Version 0.6.2 *(2019-04-11)*
+----------------------------
+- Fix issue with ViewPager2 where multiple header views may be added when returning to a previously loaded tab with a sticky header
+*Thanks @ryandt for the sample repro app. This was used as a base for the new Espresso tests.
+
 Version 0.6.0 *(2019-04-11)*
 ----------------------------
 - Add `StickyLayoutManager#disableParentViewRestrictions` to turn off the runtime check for valid parent views of the `RecyclerView`
