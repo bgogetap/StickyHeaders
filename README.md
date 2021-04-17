@@ -1,4 +1,3 @@
-[ ![Download](https://api.bintray.com/packages/bgogetap/android/StickyHeaders/images/download.svg) ](https://bintray.com/bgogetap/android/StickyHeaders/_latestVersion) [![Build Status](https://travis-ci.org/bgogetap/StickyHeaders.svg?branch=tests)](https://travis-ci.org/bgogetap/StickyHeaders)
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-StickyHeaders-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/3922)
 # StickyHeaders
 Easily add Sticky Headers to your RecyclerView
@@ -33,14 +32,8 @@ Add to your Gradle dependencies (Check badge at top for latest version):
 
 
 ```groovy
-buildscript {
-    repositories {
-        jcenter()
-    }
-}
-
 dependencies {
-    compile 'com.brandongogetap:stickyheaders:x.y.z'
+    implementation 'com.brandongogetap:stickyheaders:0.6.2'
 }
 ```
 

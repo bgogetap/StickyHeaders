@@ -1,25 +1,4 @@
-plugins {
-    id "com.jfrog.bintray" version "1.6"
-    id "com.github.dcendents.android-maven" version "1.5"
-}
 apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
-
-repositories {
-    mavenCentral()
-}
-
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from android.sourceSets.main.java.srcDirs
-}
-
-artifacts {
-    archives sourcesJar
-}
-
-group = PROJECT_GROUP_ID
-version = PROJECT_VERSION
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -39,23 +18,4 @@ dependencies {
     testImplementation "org.robolectric:robolectric:$robolectricVersion"
 }
 
-bintray {
-    Properties properties = new Properties()
-    if (file('local.properties').exists()) {
-        properties.load(new FileInputStream(file('local.properties')))
-    }
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
-    configurations = ['archives']
-    pkg {
-        repo = 'android'
-        name = 'StickyHeaders'
-        userOrg = user
-        licenses = ['Apache-2.0']
-        vcsUrl = PROJECT_VCS_URL
-        version {
-            name = PROJECT_VERSION
-            desc = PROJECT_DESCRIPTION
-        }
-    }
-}
+apply from: 'maven-push.gradle'
